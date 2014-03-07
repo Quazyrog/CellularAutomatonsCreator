@@ -8,10 +8,6 @@
 #include <QMenuBar>
 #include <QApplication>
 #include <QAction>
-#include <QPlainTextEdit>
-#include <QMessageBox>
-#include <QResource>
-#include <fstream>
 
 
 class GridSettingsWindow;
@@ -25,7 +21,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     GridSettingsWindow *gridSettingsWindow;
-    QPlainTextEdit *licenseBrowser;
 
     QTimer *timer;
     PopulationViewWidget *theWorld;
@@ -40,7 +35,7 @@ private:
     void createFileMenu();
 
     QMenu *helpMenu;
-    QAction *actionAboutQt, *actionShowLicense;
+    QAction *actionAboutQt;
     void createHelpMenu();
 
     QMenu *settingsMenu;
@@ -60,7 +55,6 @@ private slots:
     void pause();
     void newGame();
     void showGridSettingsWindow();
-    void showLicense();
 
 };
 

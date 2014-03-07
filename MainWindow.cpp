@@ -27,10 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     gridSettingsWindow = new GridSettingsWindow(this);
 
-    licenseBrowser = new QPlainTextEdit();
-    licenseBrowser->setReadOnly(true);
-    licenseBrowser->resize(600, 400);
-
     showMaximized();
 }
 
@@ -107,10 +103,6 @@ void MainWindow::createHelpMenu()
     actionAboutQt->setText(tr("O Qt"));
     connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     helpMenu->addAction(actionAboutQt);
-
-    actionShowLicense = new QAction(tr("Licencja"), this);
-    connect(actionShowLicense, SIGNAL(triggered()), this, SLOT(showLicense()));
-    helpMenu->addAction(actionShowLicense);
 }
 
 
@@ -137,16 +129,6 @@ void MainWindow::newGame()
 void MainWindow::showGridSettingsWindow()
 {
     gridSettingsWindow->show();
-}
-
-
-void MainWindow::showLicense()
-{
-    bool textLoaded = false;
-    if (!textLoaded) {
-        licenseBrowser->appendPlainText((char*) QResource(":/license/gpl-3.0.txt").data());
-    }
-    licenseBrowser->show();
 }
 
 

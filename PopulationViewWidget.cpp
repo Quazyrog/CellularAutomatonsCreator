@@ -1,5 +1,4 @@
 #include "PopulationViewWidget.hpp"
-#include "Exception.hpp"
 #include "CellInfo.hpp"
 
 
