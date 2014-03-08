@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     createHelpMenu();
 
     setWindowTitle(tr("Automaty Komórkowe"));
-    setWindowIcon(QIcon((QString) ":/windows/MainWindow.png"));
+    setWindowIcon(QIcon((QString) ":/windows/MainWindow.svg"));
     setMinimumSize(QSize(600, 400));
 
     gridSettingsWindow = new GridSettingsWindow(this);
