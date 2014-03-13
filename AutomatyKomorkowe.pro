@@ -17,12 +17,12 @@ SOURCES += main.cpp\
         MainWindow.cpp \
     PopulationViewWidget.cpp \
     GridSettingsWindow.cpp \
-    CellInfo.cpp
-
+    CellInfo.cpp \
+    
 HEADERS  += MainWindow.hpp \
     PopulationViewWidget.hpp \
     GridSettingsWindow.hpp \
-    CellInfo.hpp
-
+    CellInfo.hpp \
+    
 RESOURCES += \
     Icons.qrc

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/windows">
+    <qresource prefix="/icons">
         <file>MainWindow.svg</file>
     </qresource>
 </RCC>
