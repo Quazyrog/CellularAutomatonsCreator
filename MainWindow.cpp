@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     createHelpMenu();
 
     setWindowTitle(tr("Automaty Komórkowe"));
-    setWindowIcon(QIcon((QString) ":/windows/MainWindow.svg"));
+    setWindowIcon(QIcon((QString) ":/icons/MainWindow.svg"));
     setMinimumSize(QSize(600, 400));
 
     gridSettingsWindow = new GridSettingsWindow(this);
@@ -50,12 +50,13 @@ void MainWindow::createSimulationMenu()
 
     actionPause = new QAction(this);
     actionPause->setText(tr("Wstrzymaj / Wznów"));
-    actionPause->setShortcut(Qt::Key_F5);
+    actionPause->setShortcut(Qt::CTRL + Qt::Key_R);
     connect(actionPause, SIGNAL(triggered()), this, SLOT(pause()));
     simulationMenu->addAction(actionPause);
 
     actionReset = new QAction(this);
     actionReset->setText(tr("Wyczyść siatkę"));
+    actionReset->setShortcut(Qt::CTRL + Qt::Key_C);
     connect(actionReset, SIGNAL(triggered()), theWorld, SLOT(resetGrid()));
     connect(actionReset, SIGNAL(triggered()), this, SLOT(newGame()));
     simulationMenu->addAction(actionReset);
