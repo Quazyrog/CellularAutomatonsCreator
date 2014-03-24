@@ -1,6 +1,8 @@
 #include "MainWindow.hpp"
+#include "CellularAutomaton.hpp"
 #include <QApplication>
 
+#include <string>
 #include <csignal>
 #include <iostream>
 #include <cstdlib>
@@ -10,7 +12,7 @@
 
 void halt(int sig)
 {
-    std::cerr << "Unexpected signel " << sig << ". Aborting." << std::endl;
+    std::cerr << "Unexpected signal " << sig << ". Aborting." << std::endl;
     std::cerr.flush();
     abort();
 }
@@ -18,8 +20,8 @@ void halt(int sig)
 
 int main(int argc, char *argv[])
 {
+    CellularAutomaton::initialize();
     signal(SIGSEGV, halt);
-
     srand(time(NULL));
 
 #if QT_VERSION <= 0x050000
