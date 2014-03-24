@@ -1,8 +1,249 @@
 #include "CellularAutomaton.hpp"
-#include "CellInfo.hpp"
 
 
 QSet<char> CellularAutomaton::digits, CellularAutomaton::operators;
+
+
+
+CellularAutomaton::SyntaxExrrorException::SyntaxExrrorException(QString msg, int pos)
+{
+    position = pos;
+    message = msg.replace("%p", QString::number(pos));
+}
+
+
+CellularAutomaton::SyntaxExrrorException::SyntaxExrrorException(const SyntaxExrrorException *other)
+{
+    message = other->message;
+    position = other->position;
+}
+
+
+CellularAutomaton::SyntaxExrrorException *CellularAutomaton::SyntaxExrrorException::clone() const
+{
+    return new SyntaxExrrorException(this);
+}
+
+
+void CellularAutomaton::SyntaxExrrorException::raise() const
+{
+    throw *this;
+}
+
+
+QString CellularAutomaton::SyntaxExrrorException::getMessage()
+{
+    return message;
+}
+
+
+int CellularAutomaton::SyntaxExrrorException::getPosition()
+{
+    return position;
+}
+
+
+CellularAutomaton::ScriptBrick::~ScriptBrick()
+{
+
+}
+
+
+StatusT CellularAutomaton::ScriptBrick::exec(CellInfo *cell)
+{
+    std::cerr << "CellularAutomaton::ScriptBrick::exec: shouldn't be called!" << std::endl;
+}
+
+
+CellularAutomaton::ScriptBrickIf::ScriptBrickIf(QString condition) throw (SyntaxExrrorException *)
+{
+    comparisionOperator = NONE;
+
+    switch (condition.count("=")) {
+    case 0:
+        break;
+    case 1:
+        if (comparisionOperator != NONE)
+            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("=")).raise();
+        comparisionOperator = EQUAL;
+        break;
+    }
+
+    switch (condition.count("!=")) {
+    case 0:
+        break;
+    case 1:
+        if (comparisionOperator != NONE)
+            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("!=")).raise();
+        comparisionOperator = NOT_EQUAL;
+        break;
+    }
+
+    switch (condition.count("<")) {
+    case 0:
+        break;
+    case 1:
+        if (comparisionOperator != NONE)
+            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("<")).raise();
+        comparisionOperator = LESS;
+        break;
+    }
+
+    switch (condition.count("<=")) {
+    case 0:
+        break;
+    case 1:
+        if (comparisionOperator != NONE)
+            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("<=")).raise();
+        comparisionOperator = LESS_OR_EQUAL;
+        break;
+    }
+
+    switch (condition.count(">")) {
+    case 0:
+        break;
+    case 1:
+        if (comparisionOperator != NONE)
+            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf(">")).raise();
+        comparisionOperator = GREATER;
+        break;
+    }
+
+    switch (condition.count(">=")) {
+    case 0:
+        break;
+    case 1:
+        if (comparisionOperator != NONE)
+            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf(">=")).raise();
+        comparisionOperator = GREATER_OR_EQUAL;
+        break;
+    }
+
+    QStringList list;
+    switch (comparisionOperator) {
+    case NONE:
+        SyntaxExrrorException(QObject::tr("Brak operatora porównania."), condition.length()).raise();
+        break;
+    case EQUAL:
+        list = condition.split("=");
+        break;
+    case NOT_EQUAL:
+        list = condition.split("!=");
+        break;
+    case LESS:
+        list = condition.split("<");
+        break;
+    case LESS_OR_EQUAL:
+        list = condition.split("<=");
+        break;
+    case GREATER:
+        list = condition.split(">");
+        break;
+    case GREATER_OR_EQUAL:
+        list = condition.split(">=");
+        break;
+    }
+
+    leftExpression = list[0];
+    try {
+        checkSyntaxOfMathexpr(leftExpression.toUtf8().constData());
+    } catch (SyntaxExrrorException *e) {
+        SyntaxExrrorException(QObject::tr("Błąd przetwarzania lewego wyrażenia: ") + e->getMessage(), e->getPosition()).raise();
+    }
+
+    rightExpression = list[1];
+    try {
+        checkSyntaxOfMathexpr(rightExpression.toUtf8().constData());
+    } catch (SyntaxExrrorException *e) {
+        SyntaxExrrorException(QObject::tr("Błąd przetwarzania prawego wyrażenia: ") + e->getMessage(), e->getPosition()).raise();
+    }
+
+    then = nullptr;
+    next = nullptr;
+}
+
+
+CellularAutomaton::ScriptBrickIf::~ScriptBrickIf()
+{
+    if (next != nullptr)
+        delete next;
+    if (then != nullptr)
+        delete then;
+}
+
+
+StatusT CellularAutomaton::ScriptBrickIf::exec(CellInfo *cell)
+{
+    QString left = leftExpression;
+    for (size_t i = 0; i < 32; i++) {
+        left = left.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
+    }
+
+    QString right = rightExpression;
+    for (size_t i = 0; i < 32; i++) {
+        right = right.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
+    }
+
+    bool result = false;
+    switch (comparisionOperator) {
+    case EQUAL:
+        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) ==
+                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        break;
+    case NOT_EQUAL:
+        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) !=
+                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        break;
+    case LESS:
+        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) <
+                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        break;
+    case LESS_OR_EQUAL:
+        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) <=
+                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        break;
+    case GREATER:
+        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) >
+                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        break;
+    case GREATER_OR_EQUAL:
+        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) >=
+                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        break;
+    }
+
+    if (result) {
+        if (then != nullptr) {
+            return then->exec(cell);
+        } else {
+            std::cerr << "CellularAutomaton::ScriptBrickIf::exec: then == nullptr!" << std::endl;
+        }
+    } else {
+        if (next != nullptr) {
+            return next->exec(cell);
+        } else {
+            std::cerr << "CellularAutomaton::ScriptBrickIf::exec: next == nullptr!" << std::endl;
+        }
+    }
+}
+
+
+CellularAutomaton::ScriptBrickReturn::ScriptBrickReturn(StatusT v)
+{
+    value = v;
+}
+
+
+CellularAutomaton::ScriptBrickReturn::~ScriptBrickReturn()
+{
+
+}
+
+
+StatusT CellularAutomaton::ScriptBrickReturn::exec(CellInfo *cell)
+{
+    return value;
+}
 
 
 CellularAutomaton::CellularAutomaton()
@@ -127,7 +368,7 @@ long long int CellularAutomaton::calculateMathexpr(const char *expr, size_t leng
 }
 
 
-int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
+int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrrorException *)
 {
     MathexprCharType previous = NOTHING;
     int bracketsLevel = 0;
@@ -144,7 +385,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                return cp - expr + 1;
+                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
             }
             break;
         case OPERATOR:
@@ -158,7 +399,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                return cp - expr + 1;
+                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
             }
             break;
         case BRACKET_OPEN:
@@ -171,7 +412,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
                 previous = MINUS;
             } else if (*cp == ' ') {
             } else {
-                return cp - expr + 1;
+                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
             }
             break;
         case BRACKET_CLOSE:
@@ -182,7 +423,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                return cp - expr + 1;
+                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
             }
             break;
         case MINUS:
@@ -193,7 +434,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
                 bracketsLevel++;
             } else if (*cp == ' ') {
             } else {
-                return cp - expr + 1;
+                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
             }
             break;
         case NOTHING:
@@ -210,18 +451,18 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
             } else if (*cp == ' ') {
                 previous = NOTHING;
             } else {
-                return cp - expr + 1;
+                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
             }
             break;
         }
 
         if (bracketsLevel < 0) {
-            return cp - expr;
+            SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i - nadmiarowy \")\"."), cp - expr + 1).raise();
         }
     }
 
-    if (bracketsLevel != 0)
-        return -1;
+    if (bracketsLevel > 0)
+        SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i - oczekiwano \")\"."), strlen(expr)).raise();
 
     return 0;
 }

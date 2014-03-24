@@ -3,14 +3,19 @@
 
 #include <cstring>
 
+typedef unsigned char StatusT;
+
+
 
 class CellInfo {
 private:
-    char neighborhood[5];
-    char myStat;
+    StatusT neighborhood[32];
+    StatusT myStat;
 public:
     CellInfo();
-    char &operator() (int s);
+
+    StatusT &operator ()(int s);
+    StatusT &get(int s);
 };
 
 #endif // CELLINFO_HPP
