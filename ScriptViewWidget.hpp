@@ -1,27 +1,84 @@
 #ifndef SCRIPTVIEWWIDGET_HPP
 #define SCRIPTVIEWWIDGET_HPP
 
+#include <cmath>
+
 #include <QWidget>
-#include<QPainter>
+#include <QPainter>
 #include <QColor>
+#include <QPaintEvent>
+
+#include "CellularAutomaton.hpp"
+#include "CellInfo.hpp"
+#include "Exceptions.hpp"
+
+
+typedef CellularAutomaton::ScriptBrickIf::ComparisionOperators ComparisionOperator;
+
+
 
 class ScriptViewWidget : public QWidget
 {
     Q_OBJECT
 
-    int depth, length;
+    struct Brick {
+        QString left, right;
+        ComparisionOperator op;
+        StatusT status;
 
-    int brickWidth, brickHeight, textSize;
-    void drawBrick;
+        int row, column;
+
+        Brick *under, *after, *parent;
+        Brick *prev, *next;
+    };
+
+    Brick *createBrick(QString left, ComparisionOperator op, QString right, StatusT color);
+    void addBrickToList(Brick *after, Brick *toInsert);
+    QString getBrickText(Brick *b);
+    QColor getBrickColor(Brick *b);
+
+    int rows, columns;
+
+    int brickWidth, brickHeight;
+    int textSize;
+    int horizontalMargin, verticalMargin;
+    int horizontalSpacing, verticalSpacing;
+
+    QPainter *painter;
+
+    Brick *firstBrick, *selection;
+
+    void paintEvent(QPaintEvent *e);
 
 public:
-    explicit ScriptViewWidget(QObject *parent = 0);
+    explicit ScriptViewWidget(QWidget *parent = 0);
 
-signals:
+    int getBrickWidth();
+    void setBrickWidth(int value);
+
+    int getBrickHeight();
+    void setBrickHeight(int value);
+
+    int getTextSize();
+    void setTextSize(int value);
+
+    int getVerticalMargin();
+    void setVerticalMargin(int value);
+
+    int getHorizontalMargin();
+    void setHorizontalMargin(int value);
+
+    int getHorizontalSpacing();
+    void setHorizontalSpacing(int value);
+
+    int getVerticalSpacing();
+    void setVerticalSpacing(int value);
 
 public slots:
-    int getBrickWidth();
-    int setBirckWidth();
+    void selectBrick(int row, int column);
+    void eraseSelected();
+    void addUnderSelected(QString left, ComparisionOperator op, QString right, StatusT status);
+    void addAfterSelected(QString left, ComparisionOperator op, QString right, StatusT status);
 
 };
 

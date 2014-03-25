@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     CellInfo.cpp \
     CellularAutomaton.cpp \
     AutomatonScriptEditor.cpp \
-    ScriptViewWidget.cpp
+    ScriptViewWidget.cpp \
+    Exceptions.cpp
     
 HEADERS  += MainWindow.hpp \
     PopulationViewWidget.hpp \
@@ -28,7 +29,8 @@ HEADERS  += MainWindow.hpp \
     CellInfo.hpp \
     CellularAutomaton.hpp \
     AutomatonScriptEditor.hpp \
-    ScriptViewWidget.hpp
+    ScriptViewWidget.hpp \
+    Exceptions.hpp
     
 RESOURCES += \
     Icons.qrc

@@ -7,6 +7,13 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    statusColors[0] = Qt::black;
+    statusColors[1] = Qt::white;
+    statusColors[2] = Qt::blue;
+    statusColors[3] = Qt::green;
+    statusColors[4] = Qt::red;
+    statusColors[5] = Qt::yellow;
+
     generation = 0;
     nextGeneration();
     theWorld = new PopulationViewWidget(this, 40, 20);
@@ -151,4 +158,10 @@ void MainWindow::setGenerationInterval(int msec)
 int MainWindow::getGenerationInterval()
 {
     return timer->interval();
+}
+
+
+QColor MainWindow::getStatusColor(StatusT status) const
+{
+    return statusColors[status];
 }

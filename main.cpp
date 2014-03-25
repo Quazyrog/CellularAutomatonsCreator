@@ -10,6 +10,7 @@
 
 #include <QTextCodec>
 #include <QtGlobal>
+#include "Exceptions.hpp"
 
 
 void halt(int sig)

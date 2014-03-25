@@ -8,7 +8,7 @@ CellInfo::CellInfo()
 
 StatusT &CellInfo::operator() (int s)
 {
-    if (0 <= s && s < 32)
+    if (0 <= s && s < STATUS_NUMBER)
         return neighborhood[s];
 }
 

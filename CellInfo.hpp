@@ -7,9 +7,13 @@ typedef unsigned char StatusT;
 
 
 
+const int STATUS_NUMBER = 32;
+
+
+
 class CellInfo {
 private:
-    StatusT neighborhood[32];
+    StatusT neighborhood[STATUS_NUMBER];
     StatusT myStat;
 public:
     CellInfo();

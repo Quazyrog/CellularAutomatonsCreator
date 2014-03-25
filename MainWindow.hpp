@@ -9,6 +9,8 @@
 #include <QApplication>
 #include <QAction>
 
+#include "CellInfo.hpp"
+
 
 class GridSettingsWindow;
 class PopulationViewWidget;
@@ -21,6 +23,8 @@ class MainWindow : public QMainWindow
 
     Q_OBJECT
 private:
+    QColor statusColors[STATUS_NUMBER];
+
     GridSettingsWindow *gridSettingsWindow;
     AutomatonScriptEditor *automatonEditor;
 
@@ -54,6 +58,8 @@ public:
 
     int getGenerationInterval();
     void setGenerationInterval(int msec);
+
+    QColor getStatusColor(StatusT status) const;
 
 private slots:
     void nextGeneration();
