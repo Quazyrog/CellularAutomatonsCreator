@@ -1,6 +1,7 @@
 #include "MainWindow.hpp"
 #include "PopulationViewWidget.hpp"
 #include "GridSettingsWindow.hpp"
+#include "AutomatonScriptEditor.hpp"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -16,16 +17,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timer, SIGNAL(timeout()), theWorld, SLOT(nextGeneration()));
     connect(timer, SIGNAL(timeout()), this, SLOT(nextGeneration()));
 
+    gridSettingsWindow = new GridSettingsWindow(this);
+    automatonEditor = new AutomatonScriptEditor(this);
+
     createFileMenu();
     createSimulationMenu();
-    createSettingsMenu();
+    createGridMenu();
+    createAutomatonMenu();
     createHelpMenu();
 
     setWindowTitle(tr("Automaty Komórkowe"));
     setWindowIcon(QIcon((QString) ":/icons/MainWindow.svg"));
     setMinimumSize(QSize(600, 400));
-
-    gridSettingsWindow = new GridSettingsWindow(this);
 
     showMaximized();
 }
@@ -39,6 +42,16 @@ MainWindow::~MainWindow()
 void MainWindow::nextGeneration()
 {
     statusBar()->showMessage(tr("Polkolenie ") + QString::number(generation++));
+}
+
+
+void MainWindow::pause()
+{
+    if (timer->isActive())
+        timer->stop();
+    else
+        timer->start();
+    statusBar()->showMessage(tr("Polkolenie ") + QString::number(generation) + QString(" (wstrzymane)"));
 }
 
 
@@ -66,16 +79,6 @@ void MainWindow::createSimulationMenu()
     connect(actionGridRND, SIGNAL(triggered()), theWorld, SLOT(makeRandomGrid()));
     connect(actionGridRND, SIGNAL(triggered()), this, SLOT(newGame()));
     simulationMenu->addAction(actionGridRND);
-}
-
-
-void MainWindow::pause()
-{
-    if (timer->isActive())
-        timer->stop();
-    else
-        timer->start();
-    statusBar()->showMessage(tr("Polkolenie ") + QString::number(generation) + QString(" (wstrzymane)"));
 }
 
 
@@ -107,15 +110,27 @@ void MainWindow::createHelpMenu()
 }
 
 
-void MainWindow::createSettingsMenu()
+void MainWindow::createGridMenu()
 {
-    settingsMenu = new QMenu(this);
-    settingsMenu->setTitle(tr("&Konfiguracja"));
-    menuBar()->addMenu(settingsMenu);
+    gridMenu = new QMenu(this);
+    gridMenu->setTitle(tr("S&iatka"));
+    menuBar()->addMenu(gridMenu);
 
     actionGridSettings = new QAction(tr("Konfiguruj rozmiar siatki"), this);
-    connect(actionGridSettings, SIGNAL(triggered()), this, SLOT(showGridSettingsWindow()));
-    settingsMenu->addAction(actionGridSettings);
+    connect(actionGridSettings, SIGNAL(triggered()), gridSettingsWindow, SLOT(show()));
+    gridMenu->addAction(actionGridSettings);
+}
+
+
+void MainWindow::createAutomatonMenu()
+{
+    automatonMenu = new QMenu(this);
+    automatonMenu->setTitle(tr("&Automat"));
+    menuBar()->addMenu(automatonMenu);
+
+    actionScriptSettings = new QAction(tr("Konfiguruj reguły przejścia"), this);
+    connect(actionScriptSettings, SIGNAL(triggered()), automatonEditor, SLOT(show()));
+    automatonMenu->addAction(actionScriptSettings);
 }
 
 
@@ -124,12 +139,6 @@ void MainWindow::newGame()
     generation = 0;
     timer->stop();
     statusBar()->showMessage(tr("Polkolenie ") + QString::number(generation) + QString(" (wstrzymane)"));
-}
-
-
-void MainWindow::showGridSettingsWindow()
-{
-    gridSettingsWindow->show();
 }
 
 

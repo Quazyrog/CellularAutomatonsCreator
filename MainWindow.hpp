@@ -12,6 +12,7 @@
 
 class GridSettingsWindow;
 class PopulationViewWidget;
+class AutomatonScriptEditor;
 
 
 class MainWindow : public QMainWindow
@@ -21,6 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     GridSettingsWindow *gridSettingsWindow;
+    AutomatonScriptEditor *automatonEditor;
 
     QTimer *timer;
     PopulationViewWidget *theWorld;
@@ -38,10 +40,13 @@ private:
     QAction *actionAboutQt;
     void createHelpMenu();
 
-    QMenu *settingsMenu;
+    QMenu *gridMenu;
     QAction *actionGridSettings;
-    void createSettingsMenu();
+    void createGridMenu();
 
+    QMenu *automatonMenu;
+    QAction *actionScriptSettings;
+    void createAutomatonMenu();
 
 public:
     MainWindow(QWidget *parent = 0);
@@ -54,7 +59,6 @@ private slots:
     void nextGeneration();
     void pause();
     void newGame();
-    void showGridSettingsWindow();
 
 };
 

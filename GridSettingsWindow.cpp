@@ -24,7 +24,7 @@ void GridSettingsWindow::createSizeSettings(int row)
 {
     sizeForm = new QGroupBox(this);
     sizeForm->setTitle(tr("Rozmiar siatki"));
-    sizeFormLayout = new QFormLayout(this);
+    sizeFormLayout = new QFormLayout(sizeForm);
     sizeForm->setLayout(sizeFormLayout);
 
     widthBox = new QSpinBox(this);

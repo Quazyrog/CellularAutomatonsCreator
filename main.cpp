@@ -7,8 +7,10 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+
 #include <QTextCodec>
 #include <QtGlobal>
+
 
 void halt(int sig)
 {
@@ -30,6 +32,7 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication a(argc, argv);
+
     MainWindow w;
     w.show();
 

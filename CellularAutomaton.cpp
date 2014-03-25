@@ -4,42 +4,10 @@
 QSet<char> CellularAutomaton::digits, CellularAutomaton::operators;
 
 
-
-CellularAutomaton::SyntaxExrrorException::SyntaxExrrorException(QString msg, int pos)
+CellularAutomaton::SyntaxCheckResult::SyntaxCheckResult(QString m, int p)
 {
-    position = pos;
-    message = msg.replace("%p", QString::number(pos));
-}
-
-
-CellularAutomaton::SyntaxExrrorException::SyntaxExrrorException(const SyntaxExrrorException *other)
-{
-    message = other->message;
-    position = other->position;
-}
-
-
-CellularAutomaton::SyntaxExrrorException *CellularAutomaton::SyntaxExrrorException::clone() const
-{
-    return new SyntaxExrrorException(this);
-}
-
-
-void CellularAutomaton::SyntaxExrrorException::raise() const
-{
-    throw *this;
-}
-
-
-QString CellularAutomaton::SyntaxExrrorException::getMessage()
-{
-    return message;
-}
-
-
-int CellularAutomaton::SyntaxExrrorException::getPosition()
-{
-    return position;
+    msg = m.replace("%i", QString::number(p + 1));
+    invalid = p + 1;
 }
 
 
@@ -55,108 +23,11 @@ StatusT CellularAutomaton::ScriptBrick::exec(CellInfo *cell)
 }
 
 
-CellularAutomaton::ScriptBrickIf::ScriptBrickIf(QString condition) throw (SyntaxExrrorException *)
+CellularAutomaton::ScriptBrickIf::ScriptBrickIf(QString l, ComparisionOperators c, QString r)
 {
-    comparisionOperator = NONE;
-
-    switch (condition.count("=")) {
-    case 0:
-        break;
-    case 1:
-        if (comparisionOperator != NONE)
-            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("=")).raise();
-        comparisionOperator = EQUAL;
-        break;
-    }
-
-    switch (condition.count("!=")) {
-    case 0:
-        break;
-    case 1:
-        if (comparisionOperator != NONE)
-            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("!=")).raise();
-        comparisionOperator = NOT_EQUAL;
-        break;
-    }
-
-    switch (condition.count("<")) {
-    case 0:
-        break;
-    case 1:
-        if (comparisionOperator != NONE)
-            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("<")).raise();
-        comparisionOperator = LESS;
-        break;
-    }
-
-    switch (condition.count("<=")) {
-    case 0:
-        break;
-    case 1:
-        if (comparisionOperator != NONE)
-            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf("<=")).raise();
-        comparisionOperator = LESS_OR_EQUAL;
-        break;
-    }
-
-    switch (condition.count(">")) {
-    case 0:
-        break;
-    case 1:
-        if (comparisionOperator != NONE)
-            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf(">")).raise();
-        comparisionOperator = GREATER;
-        break;
-    }
-
-    switch (condition.count(">=")) {
-    case 0:
-        break;
-    case 1:
-        if (comparisionOperator != NONE)
-            SyntaxExrrorException(QObject::tr("Nadmiarowy operator porównania na pozycji %i."), condition.indexOf(">=")).raise();
-        comparisionOperator = GREATER_OR_EQUAL;
-        break;
-    }
-
-    QStringList list;
-    switch (comparisionOperator) {
-    case NONE:
-        SyntaxExrrorException(QObject::tr("Brak operatora porównania."), condition.length()).raise();
-        break;
-    case EQUAL:
-        list = condition.split("=");
-        break;
-    case NOT_EQUAL:
-        list = condition.split("!=");
-        break;
-    case LESS:
-        list = condition.split("<");
-        break;
-    case LESS_OR_EQUAL:
-        list = condition.split("<=");
-        break;
-    case GREATER:
-        list = condition.split(">");
-        break;
-    case GREATER_OR_EQUAL:
-        list = condition.split(">=");
-        break;
-    }
-
-    leftExpression = list[0];
-    try {
-        checkSyntaxOfMathexpr(leftExpression.toUtf8().constData());
-    } catch (SyntaxExrrorException *e) {
-        SyntaxExrrorException(QObject::tr("Błąd przetwarzania lewego wyrażenia: ") + e->getMessage(), e->getPosition()).raise();
-    }
-
-    rightExpression = list[1];
-    try {
-        checkSyntaxOfMathexpr(rightExpression.toUtf8().constData());
-    } catch (SyntaxExrrorException *e) {
-        SyntaxExrrorException(QObject::tr("Błąd przetwarzania prawego wyrażenia: ") + e->getMessage(), e->getPosition()).raise();
-    }
+    leftExpression = l;
+    comparisionOperator = c;
+    rightExpression = r;
 
     then = nullptr;
     next = nullptr;
@@ -368,7 +239,7 @@ long long int CellularAutomaton::calculateMathexpr(const char *expr, size_t leng
 }
 
 
-int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrrorException *)
+CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
 {
     MathexprCharType previous = NOTHING;
     int bracketsLevel = 0;
@@ -385,7 +256,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrr
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
+                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case OPERATOR:
@@ -399,7 +270,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrr
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
+                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case BRACKET_OPEN:
@@ -412,7 +283,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrr
                 previous = MINUS;
             } else if (*cp == ' ') {
             } else {
-                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
+                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case BRACKET_CLOSE:
@@ -423,7 +294,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrr
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
+                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case MINUS:
@@ -434,7 +305,7 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrr
                 bracketsLevel++;
             } else if (*cp == ' ') {
             } else {
-                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
+                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case NOTHING:
@@ -451,20 +322,20 @@ int CellularAutomaton::checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrr
             } else if (*cp == ' ') {
                 previous = NOTHING;
             } else {
-                SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1).raise();
+                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         }
 
         if (bracketsLevel < 0) {
-            SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i - nadmiarowy \")\"."), cp - expr + 1).raise();
+            SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i - nadmiarowy \")\"."), cp - expr + 1);
         }
     }
 
     if (bracketsLevel > 0)
-        SyntaxExrrorException(QObject::tr("Nie prawidłowy znak %i - oczekiwano \")\"."), strlen(expr)).raise();
+        SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i - oczekiwano \")\"."), strlen(expr));
 
-    return 0;
+    return SyntaxCheckResult("OK", -1);
 }
 
 

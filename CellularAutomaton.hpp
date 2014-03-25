@@ -28,32 +28,6 @@ class CellularAutomaton
 {
     friend class CellInfo;
 
-public:
-    class SyntaxExrrorException : QException
-    {
-        QString message;
-        int position;
-        SyntaxExrrorException(const SyntaxExrrorException *other);
-    public:
-        SyntaxExrrorException(QString msg, int pos);
-
-        void raise() const;
-        SyntaxExrrorException *clone() const;
-
-        QString getMessage();
-        int getPosition();
-    };
-
-private:
-    enum MathexprCharType {DIGIT,
-                           OPERATOR,
-                           BRACKET_OPEN,
-                           BRACKET_CLOSE,
-                           MINUS,
-                           NOTHING};
-    static QSet<char> digits, operators;
-    static long long int calculateMathexpr(const char *expr, size_t length);
-
     class ScriptBrick
     {
         friend class CellularAutomaton;
@@ -64,12 +38,32 @@ private:
         virtual StatusT exec(CellInfo *cell);
     };
 
+    static QSet<char> digits, operators;
+    static long long int calculateMathexpr(const char *expr, size_t length);
+
+public:
+    enum MathexprCharType {DIGIT,
+                           OPERATOR,
+                           BRACKET_OPEN,
+                           BRACKET_CLOSE,
+                           MINUS,
+                           NOTHING};
+
+    struct SyntaxCheckResult
+    {
+        QString msg;
+        int invalid;
+
+        SyntaxCheckResult(QString m, int p);
+    };
+
+
     class ScriptBrickIf
     {
         friend class CellularAutomaton;
 
-        enum ComparisionOperators { NONE,
-                                    EQUAL,
+    public:
+        enum ComparisionOperators { EQUAL,
                                     NOT_EQUAL,
                                     LESS,
                                     LESS_OR_EQUAL,
@@ -79,8 +73,7 @@ private:
         QString leftExpression, rightExpression;
         ScriptBrick *then, *next;
 
-    public:
-        ScriptBrickIf(QString condition) throw (SyntaxExrrorException *);
+        ScriptBrickIf(QString l, ComparisionOperators c, QString r);
         virtual ~ScriptBrickIf();
 
 
@@ -102,7 +95,7 @@ private:
 
 public:
     static long long int calculateMathexpr(const char *expr);
-    static int checkSyntaxOfMathexpr(const char *expr) throw (SyntaxExrrorException *);
+    static SyntaxCheckResult checkSyntaxOfMathexpr(const char *expr);
     static void initialize();
 
     CellularAutomaton();

@@ -18,13 +18,17 @@ SOURCES += main.cpp\
     PopulationViewWidget.cpp \
     GridSettingsWindow.cpp \
     CellInfo.cpp \
-    CellularAutomaton.cpp
+    CellularAutomaton.cpp \
+    AutomatonScriptEditor.cpp \
+    ScriptViewWidget.cpp
     
 HEADERS  += MainWindow.hpp \
     PopulationViewWidget.hpp \
     GridSettingsWindow.hpp \
     CellInfo.hpp \
-    CellularAutomaton.hpp
+    CellularAutomaton.hpp \
+    AutomatonScriptEditor.hpp \
+    ScriptViewWidget.hpp
     
 RESOURCES += \
     Icons.qrc
