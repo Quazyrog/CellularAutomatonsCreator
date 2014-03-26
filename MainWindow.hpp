@@ -23,7 +23,7 @@ class MainWindow : public QMainWindow
 
     Q_OBJECT
 private:
-    QColor statusColors[STATUS_NUMBER];
+    QColor statusFillColors[STATUS_NUMBER], statusTextColors[STATUS_NUMBER];
 
     GridSettingsWindow *gridSettingsWindow;
     AutomatonScriptEditor *automatonEditor;
@@ -59,7 +59,9 @@ public:
     int getGenerationInterval();
     void setGenerationInterval(int msec);
 
-    QColor getStatusColor(StatusT status) const;
+    QColor getStatusFillColor(StatusT status) const;
+
+    QColor getStatusTextColor(StatusT status) const;
 
 private slots:
     void nextGeneration();

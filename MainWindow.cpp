@@ -7,12 +7,18 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    statusColors[0] = Qt::black;
-    statusColors[1] = Qt::white;
-    statusColors[2] = Qt::blue;
-    statusColors[3] = Qt::green;
-    statusColors[4] = Qt::red;
-    statusColors[5] = Qt::yellow;
+    statusFillColors[0] = Qt::black;
+    statusTextColors[0] = Qt::white;
+    statusFillColors[1] = Qt::white;
+    statusTextColors[1] = Qt::black;
+    statusFillColors[2] = Qt::blue;
+    statusTextColors[2] = Qt::white;
+    statusFillColors[3] = Qt::green;
+    statusTextColors[3] = Qt::white;
+    statusFillColors[4] = Qt::red;
+    statusTextColors[4] = Qt::black;
+    statusFillColors[5] = Qt::yellow;
+    statusTextColors[5] = Qt::black;
 
     generation = 0;
     nextGeneration();
@@ -161,7 +167,13 @@ int MainWindow::getGenerationInterval()
 }
 
 
-QColor MainWindow::getStatusColor(StatusT status) const
+QColor MainWindow::getStatusFillColor(StatusT status) const
 {
-    return statusColors[status];
+    return statusFillColors[status];
+}
+
+
+QColor MainWindow::getStatusTextColor(StatusT status) const
+{
+    return statusTextColors[status];
 }

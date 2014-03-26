@@ -4,8 +4,10 @@
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QTreeView>
 #include <QPushButton>
+#include <QScrollArea>
+
+#include "ScriptViewWidget.hpp"
 
 class MainWindow;
 
@@ -28,7 +30,8 @@ class AutomatonScriptEditor : public QDialog
     QHBoxLayout *mainLayout;
     FourScriptButtonsWidget *buttonsWidget;
 
-    QTreeView *scriptView;
+    ScriptViewWidget *scriptView;
+    QScrollArea *scriptViewScrollArea;
     QList<QString> *script;
 
 public:

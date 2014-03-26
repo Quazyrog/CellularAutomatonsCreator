@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QColor>
 #include <QPaintEvent>
+#include <QFont>
 
 #include "CellularAutomaton.hpp"
 #include "CellInfo.hpp"
@@ -14,6 +15,9 @@
 
 
 typedef CellularAutomaton::ScriptBrickIf::ComparisionOperators ComparisionOperator;
+
+
+class MainWindow;
 
 
 
@@ -26,7 +30,7 @@ class ScriptViewWidget : public QWidget
         ComparisionOperator op;
         StatusT status;
 
-        int row, column;
+        int column;
 
         Brick *under, *after, *parent;
         Brick *prev, *next;
@@ -36,6 +40,7 @@ class ScriptViewWidget : public QWidget
     void addBrickToList(Brick *after, Brick *toInsert);
     QString getBrickText(Brick *b);
     QColor getBrickColor(Brick *b);
+    QColor getTextColor(Brick *b);
 
     int rows, columns;
 
@@ -45,13 +50,16 @@ class ScriptViewWidget : public QWidget
     int horizontalSpacing, verticalSpacing;
 
     QPainter *painter;
+    QFont textFont;
 
     Brick *firstBrick, *selection;
+
+    MainWindow *mainWindow;
 
     void paintEvent(QPaintEvent *e);
 
 public:
-    explicit ScriptViewWidget(QWidget *parent = 0);
+    explicit ScriptViewWidget(MainWindow *mainWindow, QWidget *parent = 0);
 
     int getBrickWidth();
     void setBrickWidth(int value);

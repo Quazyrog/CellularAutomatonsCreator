@@ -27,16 +27,19 @@ FourScriptButtonsWidget::FourScriptButtonsWidget(QWidget *parent = 0) :
 AutomatonScriptEditor::AutomatonScriptEditor(MainWindow *parent) :
     QDialog(parent)
 {
-    scriptView = new QTreeView(this);
+    scriptViewScrollArea = new QScrollArea(this);
+    scriptView = new ScriptViewWidget(parent, this);
+    scriptViewScrollArea->setWidget(scriptView);
+    scriptViewScrollArea->setWidgetResizable(false);
     buttonsWidget = new FourScriptButtonsWidget(this);
 
     mainLayout = new QHBoxLayout(this);
     setLayout(mainLayout);
 
-    mainLayout->addWidget(scriptView);
+    mainLayout->addWidget(scriptViewScrollArea);
     mainLayout->addWidget(buttonsWidget);
 
-    resize(600, 400);
+    setMinimumSize(600, 400);
     setModal(true);
     setWindowTitle(tr("Konfiguracja reguł przejścia"));
 

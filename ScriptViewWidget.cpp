@@ -1,11 +1,14 @@
 #include "ScriptViewWidget.hpp"
 
-ScriptViewWidget::ScriptViewWidget(QWidget *parent) :
+#include "MainWindow.hpp"
+
+
+ScriptViewWidget::ScriptViewWidget(MainWindow *mainWindow, QWidget *parent) :
     QWidget(parent)
 {
     brickHeight = 30;
     brickWidth = 300;
-    textSize = 20;
+    textSize = 14;
     horizontalMargin = 5;
     verticalMargin = 5;
     horizontalSpacing = 50;
@@ -14,7 +17,23 @@ ScriptViewWidget::ScriptViewWidget(QWidget *parent) :
     rows = 0;
     columns = 0;
 
+    setMinimumSize(brickWidth + horizontalMargin * 2 + horizontalSpacing * 5, verticalSpacing * 10);
+
     painter = new QPainter(this);
+    textFont.setPointSize(textSize);
+
+    this->mainWindow = mainWindow;
+
+    firstBrick = createBrick("0", CellularAutomaton::ScriptBrickIf::EQUAL, "0", 0);
+    firstBrick->column = 0;
+
+    selection = firstBrick;
+    addUnderSelected("0", CellularAutomaton::ScriptBrickIf::EQUAL, "0", 0);
+    addUnderSelected("0", CellularAutomaton::ScriptBrickIf::EQUAL, "0", 0);
+    addUnderSelected("0", CellularAutomaton::ScriptBrickIf::EQUAL, "0", 0);
+    addAfterSelected("0", CellularAutomaton::ScriptBrickIf::EQUAL, "0", 0);
+    addAfterSelected("0", CellularAutomaton::ScriptBrickIf::EQUAL, "0", 0);
+    addAfterSelected("0", CellularAutomaton::ScriptBrickIf::EQUAL, "0", 0);
 }
 
 
@@ -125,7 +144,6 @@ void ScriptViewWidget::addUnderSelected(QString left, ComparisionOperator op, QS
 {
     Brick *inserted = createBrick(left, op, right, status);
     inserted->column = selection->column + 1;
-    inserted->row = selection->row + 1;
 
     addBrickToList(selection, inserted);
 
@@ -142,7 +160,6 @@ void ScriptViewWidget::addAfterSelected(QString left, ComparisionOperator op, QS
 {
     Brick *inserted = createBrick(left, op, right, status), *lastSon;
     inserted->column = selection->column;
-    inserted->row = selection->row + 1;
 
     for (lastSon = selection; lastSon->under != nullptr; lastSon = lastSon->under);
     addBrickToList(lastSon, inserted);
@@ -159,14 +176,20 @@ void ScriptViewWidget::paintEvent(QPaintEvent *e)
 {
     painter->begin(this);
 
+    painter->setBackground(Qt::white);
+    painter->setPen(Qt::black);
+    painter->setFont(textFont);
+
+    int row = 0;
     for (Brick *painted = firstBrick; painted != nullptr; painted = painted->next) {
         int x, y;
         x = painted->column * horizontalSpacing + horizontalMargin;
-        y = painted->row * verticalSpacing + verticalMargin;
-        painter->setPen(getBrickColor(painted));
+        y = row * verticalSpacing + verticalMargin;
+        painter->setBrush(getBrickColor(painted));
         painter->drawRect(x, y, brickWidth, brickHeight);
-        painter->setPen(Qt::black);
-        painter->drawText(x + 3, y + (brickHeight - textSize) / 2, getBrickText(painted));
+        painter->setPen(getTextColor(painted));
+        painter->drawText(x, y, x + brickWidth, y + brickHeight, Qt::AlignVCenter | Qt::AlignLeft, getBrickText(painted));
+        row++;
     }
 
     painter->end();
@@ -184,7 +207,6 @@ ScriptViewWidget::Brick *ScriptViewWidget::createBrick(QString left, Comparision
     brick->under = nullptr;
     brick->prev = nullptr;
     brick->next = nullptr;
-    brick->row = -100;
     brick->column = -100;
     return brick;
 }
@@ -206,7 +228,12 @@ void ScriptViewWidget::addBrickToList(Brick *after, Brick *toInsert)
 
 QColor ScriptViewWidget::getBrickColor(Brick *b)
 {
-    return Qt::blue;
+    return mainWindow->getStatusFillColor(b->status);
+}
+
+QColor ScriptViewWidget::getTextColor(Brick *b)
+{
+    return mainWindow->getStatusTextColor(b->status);
 }
 
 
@@ -216,16 +243,22 @@ QString ScriptViewWidget::getBrickText(Brick *b)
     switch (b->op) {
     case CellularAutomaton::ScriptBrickIf::EQUAL :
         opSgn = "=";
+        break;
     case CellularAutomaton::ScriptBrickIf::NOT_EQUAL :
         opSgn = "≠";
+        break;
     case CellularAutomaton::ScriptBrickIf::LESS :
         opSgn = "<";
+        break;
     case CellularAutomaton::ScriptBrickIf::LESS_OR_EQUAL :
         opSgn = "≤";
+        break;
     case CellularAutomaton::ScriptBrickIf::GREATER :
         opSgn = ">";
+        break;
     case CellularAutomaton::ScriptBrickIf::GREATER_OR_EQUAL :
         opSgn = "≥";
+        break;
     }
 
     return b->left + opSgn + b->right;
