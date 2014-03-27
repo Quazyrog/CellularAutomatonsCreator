@@ -7,72 +7,54 @@
 #include <QMenu>
 #include <QAction>
 #include <QSignalMapper>
+#include <QSize>
+
 #include <iostream>
 
-class Exception;
-struct CellInfo;
+class MainWindow;
 
+
+#include "CellularAutomaton.hpp"
+#include "CellInfo.hpp"
 
 
 class PopulationViewWidget : public QWidget
 {
     Q_OBJECT
 private:
+    MainWindow *mainWindow;
+
     QPainter *painter;
     QPen normalPen,  highlightedPen;
     QColor colors[5];
     int cursorCellX, cursorCellY;
     void countDrawParams();
 
-    QSize gridSize;
     QRect gridArea;
     int cellSize, hmargin, vmargin;
+    QSize gridSize;
+    CellularAutomaton *world;
     const int minMargin = 5;
-    char **oldGrid, **grid;
-    void deleteGrid();
-    void resizeGrid(int width, int height);
 
-    char statusBrush, currentMaxStatus;
-    CellInfo examineCell(int x, int y);
-    char checkNewStatus(int x, int y);
-    void repaintCell(int x, int y, QPen pen);
+    StatusT statusBrush;
 
     virtual void paintEvent(QPaintEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void resizeEvent(QResizeEvent *e);
 
-    QMenu *contextMenu;
-    QAction *setStatus0, *setStatus1, *setStatus2, *setStatus3, *setStatus4;
-    QSignalMapper *contextMenuSignalMapper;
-    void createContextMenu();
-    virtual void contextMenuEvent(QContextMenuEvent *e);
-
-    int min(int a, int b) {
-        return (a < b ? a : b);
-    }
-
-    int max(int a, int b) {
-        return (a > b ? a : b);
-    }
-
-
 public:
-    explicit PopulationViewWidget(QWidget *parent = 0, int width = 40, int height = 20);
+    explicit PopulationViewWidget(MainWindow *parent, CellularAutomaton *automaton);
     virtual ~PopulationViewWidget();
 
-    void setStatusColor(unsigned int s, QColor c);
-    QColor getStatusColor(unsigned int s);
-
-    void setGridSize(int width, int height);
+    void resizeGrid(size_t width, size_t height);
     QSize getGridSize();
-
 
 public slots:
     void nextGeneration();
     void resetGrid();
     void makeRandomGrid();
-    void setBrush(int brush);
+    void setBrush(StatusT brush);
 
 };
 

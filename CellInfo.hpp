@@ -15,9 +15,11 @@ class CellInfo {
 private:
     StatusT neighborhood[STATUS_NUMBER];
     StatusT myStat;
+    StatusT k;
 public:
     CellInfo();
 
+    StatusT &me();
     StatusT &operator ()(int s);
     StatusT &get(int s);
 };

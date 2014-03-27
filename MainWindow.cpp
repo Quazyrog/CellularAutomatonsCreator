@@ -7,37 +7,32 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    statusFillColors[0] = Qt::black;
-    statusTextColors[0] = Qt::white;
-    statusFillColors[1] = Qt::white;
-    statusTextColors[1] = Qt::black;
+    statusFillColors[0] = Qt::white;
+    statusFillColors[1] = Qt::black;
     statusFillColors[2] = Qt::blue;
-    statusTextColors[2] = Qt::white;
     statusFillColors[3] = Qt::green;
-    statusTextColors[3] = Qt::white;
     statusFillColors[4] = Qt::red;
-    statusTextColors[4] = Qt::black;
     statusFillColors[5] = Qt::yellow;
-    statusTextColors[5] = Qt::black;
-
-    generation = 0;
-    nextGeneration();
-    theWorld = new PopulationViewWidget(this, 40, 20);
-    setCentralWidget(theWorld);
-
-    timer = new QTimer(this);
-    timer->setInterval(1000);
-    connect(timer, SIGNAL(timeout()), theWorld, SLOT(nextGeneration()));
-    connect(timer, SIGNAL(timeout()), this, SLOT(nextGeneration()));
 
     gridSettingsWindow = new GridSettingsWindow(this);
     automatonEditor = new AutomatonScriptEditor(this);
+
+    generation = 0;
+    world = new CellularAutomaton();
+    nextGeneration();
+    viewer = new PopulationViewWidget(this, world);
+    setCentralWidget(viewer);
 
     createFileMenu();
     createSimulationMenu();
     createGridMenu();
     createAutomatonMenu();
     createHelpMenu();
+
+    timer = new QTimer(this);
+    timer->setInterval(1000);
+    connect(timer, SIGNAL(timeout()), viewer, SLOT(nextGeneration()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(nextGeneration()));
 
     setWindowTitle(tr("Automaty Komórkowe"));
     setWindowIcon(QIcon((QString) ":/icons/MainWindow.svg"));
@@ -83,13 +78,13 @@ void MainWindow::createSimulationMenu()
     actionReset = new QAction(this);
     actionReset->setText(tr("Wyczyść siatkę"));
     actionReset->setShortcut(Qt::CTRL + Qt::Key_C);
-    connect(actionReset, SIGNAL(triggered()), theWorld, SLOT(resetGrid()));
+    connect(actionReset, SIGNAL(triggered()), viewer, SLOT(resetGrid()));
     connect(actionReset, SIGNAL(triggered()), this, SLOT(newGame()));
     simulationMenu->addAction(actionReset);
 
     actionGridRND = new QAction(this);
     actionGridRND->setText(tr("Wygeneruj losową siatkę"));
-    connect(actionGridRND, SIGNAL(triggered()), theWorld, SLOT(makeRandomGrid()));
+    connect(actionGridRND, SIGNAL(triggered()), viewer, SLOT(makeRandomGrid()));
     connect(actionGridRND, SIGNAL(triggered()), this, SLOT(newGame()));
     simulationMenu->addAction(actionGridRND);
 }
@@ -172,8 +167,3 @@ QColor MainWindow::getStatusFillColor(StatusT status) const
     return statusFillColors[status];
 }
 
-
-QColor MainWindow::getStatusTextColor(StatusT status) const
-{
-    return statusTextColors[status];
-}

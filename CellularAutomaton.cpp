@@ -4,26 +4,27 @@
 QSet<char> CellularAutomaton::digits, CellularAutomaton::operators;
 
 
-CellularAutomaton::SyntaxCheckResult::SyntaxCheckResult(QString m, int p)
+SyntaxCheckResult::SyntaxCheckResult(QString m, int p)
 {
     msg = m.replace("%i", QString::number(p + 1));
     invalid = p + 1;
 }
 
 
-CellularAutomaton::ScriptBrick::~ScriptBrick()
+ScriptBrick::~ScriptBrick()
 {
 
 }
 
 
-StatusT CellularAutomaton::ScriptBrick::exec(CellInfo *cell)
+StatusT ScriptBrick::exec(CellInfo *cell)
 {
-    std::cerr << "CellularAutomaton::ScriptBrick::exec: shouldn't be called!" << std::endl;
+    std::cerr << "ScriptBrick::exec: shouldn't be called!" << std::endl;
+    return 0;
 }
 
 
-CellularAutomaton::ScriptBrickIf::ScriptBrickIf(QString l, ComparisionOperators c, QString r)
+ScriptBrickIf::ScriptBrickIf(QString l, ComparisionOperators c, QString r)
 {
     leftExpression = l;
     comparisionOperator = c;
@@ -34,7 +35,7 @@ CellularAutomaton::ScriptBrickIf::ScriptBrickIf(QString l, ComparisionOperators 
 }
 
 
-CellularAutomaton::ScriptBrickIf::~ScriptBrickIf()
+ScriptBrickIf::~ScriptBrickIf()
 {
     if (next != nullptr)
         delete next;
@@ -43,43 +44,42 @@ CellularAutomaton::ScriptBrickIf::~ScriptBrickIf()
 }
 
 
-StatusT CellularAutomaton::ScriptBrickIf::exec(CellInfo *cell)
+StatusT ScriptBrickIf::exec(CellInfo *cell)
 {
-    QString left = leftExpression;
+    QString left = leftExpression.replace("$$", QString::number(cell->me()));
+    left = left.replace("$$", QString::number(cell->me()));
     for (size_t i = 0; i < 32; i++) {
         left = left.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
     }
 
-    QString right = rightExpression;
+    QString right = rightExpression.replace("$$", QString::number(cell->me()));
+    right = right.replace("$$", QString::number(cell->me()));
     for (size_t i = 0; i < 32; i++) {
         right = right.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
     }
 
     bool result = false;
+    long long int l, r;
+    r = CellularAutomaton::calculateMathexpr(right.toUtf8().constData());
+    l = CellularAutomaton::calculateMathexpr(left.toUtf8().constData());
     switch (comparisionOperator) {
     case EQUAL:
-        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) ==
-                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        result = (l == r);
         break;
     case NOT_EQUAL:
-        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) !=
-                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        result = (l != r);
         break;
     case LESS:
-        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) <
-                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        result = (l < r);
         break;
     case LESS_OR_EQUAL:
-        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) <=
-                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        result = (l <= r);
         break;
     case GREATER:
-        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) >
-                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        result = (l > r);
         break;
     case GREATER_OR_EQUAL:
-        result = (CellularAutomaton::calculateMathexpr(right.toUtf8().constData()) >=
-                  CellularAutomaton::calculateMathexpr(left.toUtf8().constData()));
+        result = (l >= r);
         break;
     }
 
@@ -87,31 +87,33 @@ StatusT CellularAutomaton::ScriptBrickIf::exec(CellInfo *cell)
         if (then != nullptr) {
             return then->exec(cell);
         } else {
-            std::cerr << "CellularAutomaton::ScriptBrickIf::exec: then == nullptr!" << std::endl;
+            std::cerr << "ScriptBrickIf::exec: then == nullptr!" << std::endl;
         }
     } else {
         if (next != nullptr) {
             return next->exec(cell);
         } else {
-            std::cerr << "CellularAutomaton::ScriptBrickIf::exec: next == nullptr!" << std::endl;
+            std::cerr << "ScriptBrickIf::exec: next == nullptr!" << std::endl;
         }
     }
+
+    return 0;
 }
 
 
-CellularAutomaton::ScriptBrickReturn::ScriptBrickReturn(StatusT v)
+ScriptBrickReturn::ScriptBrickReturn(StatusT v)
 {
     value = v;
 }
 
 
-CellularAutomaton::ScriptBrickReturn::~ScriptBrickReturn()
+ScriptBrickReturn::~ScriptBrickReturn()
 {
 
 }
 
 
-StatusT CellularAutomaton::ScriptBrickReturn::exec(CellInfo *cell)
+StatusT ScriptBrickReturn::exec(CellInfo *cell)
 {
     return value;
 }
@@ -119,7 +121,23 @@ StatusT CellularAutomaton::ScriptBrickReturn::exec(CellInfo *cell)
 
 CellularAutomaton::CellularAutomaton()
 {
+    grid = nullptr;
+    oldGrid = nullptr;
+    startScript = new ScriptBrickReturn(0);
 
+    gridWidth = 0;
+    gridHeight = 0;
+    info = new CellInfo;
+}
+
+
+CellularAutomaton::~CellularAutomaton()
+{
+    if (startScript != nullptr) {
+        delete startScript;
+    }
+
+    deleteGrid();
 }
 
 
@@ -136,6 +154,7 @@ void CellularAutomaton::initialize()
         digits.insert('7');
         digits.insert('8');
         digits.insert('9');
+        digits.insert('$');
     }
 
     if (operators.empty()) {
@@ -181,7 +200,6 @@ long long int CellularAutomaton::calculateMathexpr(const char *expr, size_t leng
     }
 
     if (op == nullptr) {
-        std::cerr << std::string(expr).substr(0, length) << " = " << atoll(expr) << std::endl;
         return atoll(expr);
     }
 
@@ -234,17 +252,15 @@ long long int CellularAutomaton::calculateMathexpr(const char *expr, size_t leng
 
         op = c;
     }
-    std::cerr << std::string(expr).substr(0, length) << " = " << result << std::endl;
     return result;
 }
 
 
-CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
+SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(const char *expr)
 {
     MathexprCharType previous = NOTHING;
     int bracketsLevel = 0;
     for (const char *cp = expr; *cp != 0; cp++) {
-        std::cerr << *cp;
         switch (previous) {
         case DIGIT:
             if (digits.contains(*cp)) {
@@ -256,7 +272,7 @@ CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(co
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
+                return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case OPERATOR:
@@ -270,7 +286,7 @@ CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(co
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
+                return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case BRACKET_OPEN:
@@ -283,7 +299,7 @@ CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(co
                 previous = MINUS;
             } else if (*cp == ' ') {
             } else {
-                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
+                return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case BRACKET_CLOSE:
@@ -294,7 +310,7 @@ CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(co
                 bracketsLevel--;
             } else if (*cp == ' ') {
             } else {
-                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
+                return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case MINUS:
@@ -305,7 +321,7 @@ CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(co
                 bracketsLevel++;
             } else if (*cp == ' ') {
             } else {
-                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
+                return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         case NOTHING:
@@ -322,18 +338,18 @@ CellularAutomaton::SyntaxCheckResult CellularAutomaton::checkSyntaxOfMathexpr(co
             } else if (*cp == ' ') {
                 previous = NOTHING;
             } else {
-                SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
+                return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i."), cp - expr + 1);
             }
             break;
         }
 
         if (bracketsLevel < 0) {
-            SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i - nadmiarowy \")\"."), cp - expr + 1);
+            return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i - nadmiarowy \")\"."), cp - expr + 1);
         }
     }
 
     if (bracketsLevel > 0)
-        SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i - oczekiwano \")\"."), strlen(expr));
+        return SyntaxCheckResult(QObject::tr("Nie prawidłowy znak %i - oczekiwano \")\"."), strlen(expr));
 
     return SyntaxCheckResult("OK", -1);
 }
@@ -357,4 +373,104 @@ long long int CellularAutomaton::calculateMathexpr(const char *expr)
     }
 
     return calculateMathexpr(buffer, strlen(expr) - spaces);
+}
+
+
+void CellularAutomaton::setScript(ScriptBrick *start)
+{
+    if (startScript != nullptr) {
+        delete startScript;
+    }
+    startScript = start;
+}
+
+
+void CellularAutomaton::nextGeneration()
+{
+    StatusT **g;
+    g = oldGrid;
+    oldGrid = grid;
+    grid = g;
+
+    for (size_t x = 0; x < gridWidth; x++) {
+        for (size_t y = 0; y < gridHeight; y++) {
+            StatusT s = startScript->exec(collectCellInfo(x, y));
+            std::cerr << "[" << (int) s << ": " << (int) collectCellInfo(x, y)->get(0) << " " << (int) collectCellInfo(x, y)->get(1) << "]  ";
+            grid[x][y] = s;
+        }
+        std::cerr << std::endl;
+    }
+    std::cerr << std::endl;
+}
+
+
+CellInfo *CellularAutomaton::collectCellInfo(size_t x, size_t y)
+{
+    info = new(info) CellInfo;
+    info->me() = oldGrid[x][y];
+    for (int xx = x - 1; xx <= (int) x + 1; xx++) {
+        for (int yy = y - 1; yy <= (int) y + 1; yy++) {
+            if (0 <= yy && yy <= (int) gridHeight - 1 && 0 <= xx && xx <= (int) gridWidth - 1 && !(xx == (int) x && yy == (int) y))
+                info->get(oldGrid[xx][yy])++;
+        }
+    }
+    return info;
+}
+
+
+void CellularAutomaton::createGrid(size_t w, size_t h)
+{
+    deleteGrid();
+
+    grid = new StatusT * [w];
+    for (size_t x = 0; x < w; x++) {
+        grid[x] = new StatusT [h];
+    }
+
+    oldGrid = new StatusT * [w];
+    for (size_t x = 0; x < w; x++) {
+        oldGrid[x] = new StatusT [h];
+    }
+
+    gridWidth = w;
+    gridHeight = h;
+
+    clear();
+}
+
+
+void CellularAutomaton::deleteGrid()
+{
+    if (grid != nullptr) {
+        for (size_t r = 0; r < gridHeight; r++) {
+            delete [] grid[r];
+        }
+        delete [] grid;
+    }
+
+    if (oldGrid != nullptr) {
+        for (size_t r = 0; r < gridHeight; r++) {
+            delete [] oldGrid[r];
+        }
+        delete [] oldGrid;
+    }
+}
+
+
+StatusT CellularAutomaton::get(size_t x, size_t y)
+{
+    return grid[x][y];
+}
+
+
+void CellularAutomaton::set(size_t x, size_t y, StatusT stat)
+{
+    grid[x][y] = stat % STATUS_NUMBER;
+}
+
+
+void CellularAutomaton::clear()
+{
+    for (size_t x = 0; x < gridWidth; x++)
+        memset(grid[x], 0, gridHeight);
 }

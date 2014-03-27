@@ -55,14 +55,14 @@ void GridSettingsWindow::createButtons(int row)
 
 void GridSettingsWindow::applySettings()
 {
-    parent->theWorld->setGridSize(widthBox->value(), heightBox->value());
+    parent->viewer->resizeGrid(widthBox->value(), heightBox->value());
     close();
 }
 
 
 void GridSettingsWindow::readSettings()
 {
-    QSize s = parent->theWorld->getGridSize();
+    QSize s = parent->viewer->getGridSize();
     widthBox->setValue(s.width());
     heightBox->setValue(s.height());
 }

@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     CellularAutomaton.cpp \
     AutomatonScriptEditor.cpp \
     ScriptViewWidget.cpp \
-    Exceptions.cpp
+    Exceptions.cpp \
+    BrickEditDialog.cpp
     
 HEADERS  += MainWindow.hpp \
     PopulationViewWidget.hpp \
@@ -30,7 +31,8 @@ HEADERS  += MainWindow.hpp \
     CellularAutomaton.hpp \
     AutomatonScriptEditor.hpp \
     ScriptViewWidget.hpp \
-    Exceptions.hpp
+    Exceptions.hpp \
+    BrickEditDialog.hpp
     
 RESOURCES += \
     Icons.qrc

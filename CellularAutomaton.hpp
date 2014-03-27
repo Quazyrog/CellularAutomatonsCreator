@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <exception>
 #include <iostream>
-#include <unordered_set>
+#include <iomanip>
 
 #include <QString>
 #include <QSet>
@@ -18,80 +18,106 @@
 
 
 using std::string;
-using std::unordered_set;
 
 
 class CellInfo;
+
+enum MathexprCharType {DIGIT,
+                       OPERATOR,
+                       BRACKET_OPEN,
+                       BRACKET_CLOSE,
+                       MINUS,
+                       NOTHING};
+
+
+
+
+struct SyntaxCheckResult
+{
+    QString msg;
+    int invalid;
+
+    SyntaxCheckResult() {}
+    SyntaxCheckResult(QString m, int p);
+};
+
+
+
+
+class ScriptBrick
+{
+    friend class CellularAutomaton;
+    friend class ScriptViweWidget;
+
+public:
+    virtual ~ScriptBrick();
+
+    virtual StatusT exec(CellInfo *cell);
+};
+
+
+
+
+class ScriptBrickIf :
+        public ScriptBrick
+{
+    friend class CellularAutomaton;
+    friend class ScriptViweWidget;
+
+public:
+    enum ComparisionOperators { EQUAL,
+                                NOT_EQUAL,
+                                LESS,
+                                LESS_OR_EQUAL,
+                                GREATER,
+                                GREATER_OR_EQUAL };
+    ComparisionOperators comparisionOperator;
+    QString leftExpression, rightExpression;
+    ScriptBrick *then, *next;
+
+    ScriptBrickIf(QString l, ComparisionOperators c, QString r);
+    virtual ~ScriptBrickIf();
+
+
+    virtual StatusT exec(CellInfo *cell);
+};
+
+
+
+
+class ScriptBrickReturn :
+        public ScriptBrick
+{
+    friend class CellularAutomaton;
+    friend class ScriptViweWidget;
+
+    StatusT value;
+
+public:
+    ScriptBrickReturn(StatusT v);
+    virtual ~ScriptBrickReturn();
+
+    virtual StatusT exec(CellInfo *cell);
+};
+
+
 
 
 class CellularAutomaton
 {
     friend class CellInfo;
 
-    class ScriptBrick
-    {
-        friend class CellularAutomaton;
-
-    public:
-        virtual ~ScriptBrick();
-
-        virtual StatusT exec(CellInfo *cell);
-    };
-
+private:
     static QSet<char> digits, operators;
     static long long int calculateMathexpr(const char *expr, size_t length);
 
-public:
-    enum MathexprCharType {DIGIT,
-                           OPERATOR,
-                           BRACKET_OPEN,
-                           BRACKET_CLOSE,
-                           MINUS,
-                           NOTHING};
+    size_t gridWidth, gridHeight;
+    StatusT **oldGrid, **grid;
+    ScriptBrick *startScript;
 
-    struct SyntaxCheckResult
-    {
-        QString msg;
-        int invalid;
-
-        SyntaxCheckResult(QString m, int p);
-    };
-
-
-    class ScriptBrickIf
-    {
-        friend class CellularAutomaton;
-
-    public:
-        enum ComparisionOperators { EQUAL,
-                                    NOT_EQUAL,
-                                    LESS,
-                                    LESS_OR_EQUAL,
-                                    GREATER,
-                                    GREATER_OR_EQUAL };
-        ComparisionOperators comparisionOperator;
-        QString leftExpression, rightExpression;
-        ScriptBrick *then, *next;
-
-        ScriptBrickIf(QString l, ComparisionOperators c, QString r);
-        virtual ~ScriptBrickIf();
-
-
-        virtual StatusT exec(CellInfo *cell);
-    };
-
-    class ScriptBrickReturn : ScriptBrick
-    {
-        friend class CellularAutomaton;
-
-        StatusT value;
-
-    public:
-        ScriptBrickReturn(StatusT v);
-        virtual ~ScriptBrickReturn();
-
-        virtual StatusT exec(CellInfo *cell);
-    };
+    CellInfo *collectCellInfo(size_t x, size_t y);
+    CellInfo *info;
+    void deleteGrid();
 
 public:
     static long long int calculateMathexpr(const char *expr);
@@ -99,6 +125,18 @@ public:
     static void initialize();
 
     CellularAutomaton();
+    ~CellularAutomaton();
+
+    StatusT get(size_t x, size_t y);
+    void set(size_t x, size_t y, StatusT stat);
+
+    void setScript(ScriptBrick *start);
+    void createGrid(size_t w, size_t h);
+
+public slots:
+    void nextGeneration();
+    void clear();
+
 };
 
 #endif // CELLULARAUTOMATON_HPP

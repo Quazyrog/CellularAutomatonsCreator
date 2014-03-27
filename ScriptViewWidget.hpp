@@ -8,17 +8,18 @@
 #include <QColor>
 #include <QPaintEvent>
 #include <QFont>
+#include <QInputDialog>
 
 #include "CellularAutomaton.hpp"
 #include "CellInfo.hpp"
 #include "Exceptions.hpp"
+#include "BrickEditDialog.hpp"
 
 
-typedef CellularAutomaton::ScriptBrickIf::ComparisionOperators ComparisionOperator;
+typedef ScriptBrickIf::ComparisionOperators ComparisionOperator;
 
 
 class MainWindow;
-
 
 
 class ScriptViewWidget : public QWidget
@@ -34,32 +35,41 @@ class ScriptViewWidget : public QWidget
 
         Brick *under, *after, *parent;
         Brick *prev, *next;
+
+        ~Brick();
     };
 
     Brick *createBrick(QString left, ComparisionOperator op, QString right, StatusT color);
     void addBrickToList(Brick *after, Brick *toInsert);
     QString getBrickText(Brick *b);
     QColor getBrickColor(Brick *b);
-    QColor getTextColor(Brick *b);
 
-    int rows, columns;
+    int rows, columns, selectionRow;
 
     int brickWidth, brickHeight;
     int textSize;
     int horizontalMargin, verticalMargin;
     int horizontalSpacing, verticalSpacing;
 
+    StatusT defaultStatus;
+
     QPainter *painter;
     QFont textFont;
 
-    Brick *firstBrick, *selection;
+    Brick *firstBrick, *selected;
 
     MainWindow *mainWindow;
 
     void paintEvent(QPaintEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+
+    void mkSize(bool recountRows = false);
+
+    ScriptBrick *compileBrick(Brick *brick);
 
 public:
     explicit ScriptViewWidget(MainWindow *mainWindow, QWidget *parent = 0);
+    ~ScriptViewWidget();
 
     int getBrickWidth();
     void setBrickWidth(int value);
@@ -82,11 +92,14 @@ public:
     int getVerticalSpacing();
     void setVerticalSpacing(int value);
 
+    ScriptBrick *compile();
+
 public slots:
-    void selectBrick(int row, int column);
     void eraseSelected();
-    void addUnderSelected(QString left, ComparisionOperator op, QString right, StatusT status);
-    void addAfterSelected(QString left, ComparisionOperator op, QString right, StatusT status);
+    void editSelected();
+    void addUnderSelected();
+    void addAfterSelected();
+    void editDefault();
 
 };
 

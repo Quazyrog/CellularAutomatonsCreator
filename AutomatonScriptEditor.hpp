@@ -10,16 +10,17 @@
 #include "ScriptViewWidget.hpp"
 
 class MainWindow;
+class AutomatonScriptEditor;
 
 
-class FourScriptButtonsWidget : public QWidget
+class ScriptButtonsWidget : public QWidget
 {
     Q_OBJECT
 
     QVBoxLayout *layout;
-    QPushButton *addNext, *addSub, *remove, *edit;
+    QPushButton *addNext, *addSub, *remove, *edit, *setDefault, *installScript;
 public:
-    FourScriptButtonsWidget(QWidget *parent);
+    ScriptButtonsWidget(AutomatonScriptEditor *parent);
 };
 
 
@@ -27,15 +28,22 @@ class AutomatonScriptEditor : public QDialog
 {
     Q_OBJECT
 
+    friend class ScriptButtonsWidget;
+
     QHBoxLayout *mainLayout;
-    FourScriptButtonsWidget *buttonsWidget;
+    ScriptButtonsWidget *buttonsWidget;
 
     ScriptViewWidget *scriptView;
     QScrollArea *scriptViewScrollArea;
     QList<QString> *script;
 
+    MainWindow *mainWindow;
+
 public:
     AutomatonScriptEditor(MainWindow *parent);
+
+public slots:
+    void installScript();
 };
 
 #endif // AUTOMATONSCRIPTEDITOR_HPP

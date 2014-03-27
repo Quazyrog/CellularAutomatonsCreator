@@ -10,6 +10,8 @@
 #include <QAction>
 
 #include "CellInfo.hpp"
+#include "CellularAutomaton.hpp"
+#include "AutomatonScriptEditor.hpp"
 
 
 class GridSettingsWindow;
@@ -20,16 +22,18 @@ class AutomatonScriptEditor;
 class MainWindow : public QMainWindow
 {
     friend class GridSettingsWindow;
+    friend class AutomatonScriptEditor;
 
     Q_OBJECT
 private:
-    QColor statusFillColors[STATUS_NUMBER], statusTextColors[STATUS_NUMBER];
+    QColor statusFillColors[STATUS_NUMBER];
 
     GridSettingsWindow *gridSettingsWindow;
     AutomatonScriptEditor *automatonEditor;
 
     QTimer *timer;
-    PopulationViewWidget *theWorld;
+    PopulationViewWidget *viewer;
+    CellularAutomaton *world;
     int generation;
 
     QMenu *simulationMenu;
