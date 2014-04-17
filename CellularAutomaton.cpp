@@ -1,169 +1,28 @@
+/* Copyright 2014 Wojciech Matusiak
+ *
+ * This file is part of CellularAutomatonCreator.
+ *
+ * CellularAutomatonCreator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CellularAutomatonCreator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CellularAutomatonCreator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "CellularAutomaton.hpp"
+
 
 
 QSet<char> CellularAutomaton::digits, CellularAutomaton::operators;
 
-
-SyntaxCheckResult::SyntaxCheckResult(QString m, int p)
-{
-    msg = m.replace("%i", QString::number(p + 1));
-    invalid = p + 1;
-}
-
-
-ScriptBrick::~ScriptBrick()
-{
-
-}
-
-
-StatusT ScriptBrick::exec(CellInfo *cell)
-{
-    std::cerr << "ScriptBrick::exec: shouldn't be called!" << std::endl;
-    return 0;
-}
-
-
-ScriptBrickIf::ScriptBrickIf(QString l, ComparisionOperators c, QString r)
-{
-    leftExpression = l;
-    comparisionOperator = c;
-    rightExpression = r;
-
-    then = nullptr;
-    next = nullptr;
-}
-
-
-ScriptBrickIf::~ScriptBrickIf()
-{
-    if (next != nullptr)
-        delete next;
-    if (then != nullptr)
-        delete then;
-}
-
-
-StatusT ScriptBrickIf::exec(CellInfo *cell)
-{
-    QString left = leftExpression.replace("$$", QString::number(cell->me()));
-    left = left.replace("$$", QString::number(cell->me()));
-    for (size_t i = 0; i < 32; i++) {
-        left = left.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
-    }
-
-    QString right = rightExpression.replace("$$", QString::number(cell->me()));
-    right = right.replace("$$", QString::number(cell->me()));
-    for (size_t i = 0; i < 32; i++) {
-        right = right.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
-    }
-
-    bool result = false;
-    long long int l, r;
-    r = CellularAutomaton::calculateMathexpr(right.toUtf8().constData());
-    l = CellularAutomaton::calculateMathexpr(left.toUtf8().constData());
-    switch (comparisionOperator) {
-    case EQUAL:
-        result = (l == r);
-        break;
-    case NOT_EQUAL:
-        result = (l != r);
-        break;
-    case LESS:
-        result = (l < r);
-        break;
-    case LESS_OR_EQUAL:
-        result = (l <= r);
-        break;
-    case GREATER:
-        result = (l > r);
-        break;
-    case GREATER_OR_EQUAL:
-        result = (l >= r);
-        break;
-    }
-
-    if (result) {
-        if (then != nullptr) {
-            return then->exec(cell);
-        } else {
-            std::cerr << "ScriptBrickIf::exec: then == nullptr!" << std::endl;
-        }
-    } else {
-        if (next != nullptr) {
-            return next->exec(cell);
-        } else {
-            std::cerr << "ScriptBrickIf::exec: next == nullptr!" << std::endl;
-        }
-    }
-
-    return 0;
-}
-
-
-ScriptBrickReturn::ScriptBrickReturn(StatusT v)
-{
-    value = v;
-}
-
-
-ScriptBrickReturn::~ScriptBrickReturn()
-{
-
-}
-
-
-StatusT ScriptBrickReturn::exec(CellInfo *cell)
-{
-    return value;
-}
-
-
-CellularAutomaton::CellularAutomaton()
-{
-    grid = nullptr;
-    oldGrid = nullptr;
-    startScript = new ScriptBrickReturn(0);
-
-    gridWidth = 0;
-    gridHeight = 0;
-    info = new CellInfo;
-}
-
-
-CellularAutomaton::~CellularAutomaton()
-{
-    if (startScript != nullptr) {
-        delete startScript;
-    }
-
-    deleteGrid();
-}
-
-
-void CellularAutomaton::initialize()
-{
-    if (digits.empty()) {
-        digits.insert('0');
-        digits.insert('1');
-        digits.insert('2');
-        digits.insert('3');
-        digits.insert('4');
-        digits.insert('5');
-        digits.insert('6');
-        digits.insert('7');
-        digits.insert('8');
-        digits.insert('9');
-        digits.insert('$');
-    }
-
-    if (operators.empty()) {
-        operators.insert('+');
-        operators.insert('-');
-        operators.insert('*');
-        operators.insert('/');
-    }
-}
 
 
 long long int CellularAutomaton::calculateMathexpr(const char *expr, size_t length)
@@ -363,7 +222,7 @@ long long int CellularAutomaton::calculateMathexpr(const char *expr)
             spaces++;
     }
 
-    char *buffer = new char [strlen(expr) - spaces];
+    char *buffer = new char [strlen(expr) - spaces + 1];
     char *dest = buffer;
     for (const char *src = expr; *src != 0; src++) {
         if (*src != ' ') {
@@ -372,7 +231,170 @@ long long int CellularAutomaton::calculateMathexpr(const char *expr)
         }
     }
 
+    buffer[strlen(expr)] = 0;
     return calculateMathexpr(buffer, strlen(expr) - spaces);
+}
+
+
+SyntaxCheckResult::SyntaxCheckResult(QString m, int p)
+{
+    msg = m.replace("%i", QString::number(p + 1));
+    invalid = p + 1;
+}
+
+
+ScriptBrick::~ScriptBrick()
+{
+
+}
+
+
+StatusT ScriptBrick::exec(CellInfo *cell)
+{
+    std::cerr << "ScriptBrick::exec: shouldn't be called!" << std::endl;
+    return 0;
+}
+
+
+ScriptBrickIf::ScriptBrickIf(QString l, ComparisionOperators c, QString r)
+{
+    leftExpression = l;
+    comparisionOperator = c;
+    rightExpression = r;
+
+    then = nullptr;
+    next = nullptr;
+}
+
+
+ScriptBrickIf::~ScriptBrickIf()
+{
+    if (next != nullptr)
+        delete next;
+    if (then != nullptr)
+        delete then;
+}
+
+
+StatusT ScriptBrickIf::exec(CellInfo *cell)
+{
+    QString left = leftExpression;
+    left = left.replace("$$", QString::number(cell->me()));
+    for (size_t i = 0; i < 32; i++) {
+        left.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
+    }
+
+    QString right;
+    right = rightExpression.replace("$$", QString::number(cell->me()));
+    for (size_t i = 0; i < 32; i++) {
+        right.replace(QString("$") + QString::number(i), QString::number(cell->get(i)));
+    }
+
+    bool result = false;
+    long long int l, r;
+    l = CellularAutomaton::calculateMathexpr(left.toUtf8().constData());
+    r = CellularAutomaton::calculateMathexpr(right.toUtf8().constData());
+    switch (comparisionOperator) {
+    case EQUAL:
+        result = (l == r);
+        break;
+    case NOT_EQUAL:
+        result = (l != r);
+        break;
+    case LESS:
+        result = (l < r);
+        break;
+    case LESS_OR_EQUAL:
+        result = (l <= r);
+        break;
+    case GREATER:
+        result = (l > r);
+        break;
+    case GREATER_OR_EQUAL:
+        result = (l >= r);
+        break;
+    }
+
+    if (result) {
+        if (then != nullptr) {
+            return then->exec(cell);
+        } else {
+            std::cerr << "ScriptBrickIf::exec: then == nullptr!" << std::endl;
+        }
+    } else {
+        if (next != nullptr) {
+            return next->exec(cell);
+        } else {
+            std::cerr << "ScriptBrickIf::exec: next == nullptr!" << std::endl;
+        }
+    }
+
+    return 0;
+}
+
+
+ScriptBrickReturn::ScriptBrickReturn(StatusT v)
+{
+    value = v;
+}
+
+
+ScriptBrickReturn::~ScriptBrickReturn()
+{
+
+}
+
+
+StatusT ScriptBrickReturn::exec(CellInfo *cell)
+{
+    return value;
+}
+
+
+CellularAutomaton::CellularAutomaton()
+{
+    grid = nullptr;
+    oldGrid = nullptr;
+    startScript = new ScriptBrickReturn(0);
+
+    gridWidth = 0;
+    gridHeight = 0;
+    info = new CellInfo;
+}
+
+
+CellularAutomaton::~CellularAutomaton()
+{
+    if (startScript != nullptr) {
+        delete startScript;
+    }
+
+    deleteGrid();
+}
+
+
+void CellularAutomaton::initialize()
+{
+    if (digits.empty()) {
+        digits.insert('0');
+        digits.insert('1');
+        digits.insert('2');
+        digits.insert('3');
+        digits.insert('4');
+        digits.insert('5');
+        digits.insert('6');
+        digits.insert('7');
+        digits.insert('8');
+        digits.insert('9');
+        digits.insert('$');
+    }
+
+    if (operators.empty()) {
+        operators.insert('+');
+        operators.insert('-');
+        operators.insert('*');
+        operators.insert('/');
+    }
 }
 
 
@@ -394,24 +416,20 @@ void CellularAutomaton::nextGeneration()
 
     for (size_t x = 0; x < gridWidth; x++) {
         for (size_t y = 0; y < gridHeight; y++) {
-            StatusT s = startScript->exec(collectCellInfo(x, y));
-            std::cerr << "[" << (int) s << ": " << (int) collectCellInfo(x, y)->get(0) << " " << (int) collectCellInfo(x, y)->get(1) << "]  ";
-            grid[x][y] = s;
+            grid[x][y] = startScript->exec(collectCellInfo(x, y));
         }
-        std::cerr << std::endl;
     }
-    std::cerr << std::endl;
 }
 
 
 CellInfo *CellularAutomaton::collectCellInfo(size_t x, size_t y)
 {
     info = new(info) CellInfo;
-    info->me() = oldGrid[x][y];
+    info->meRef() = oldGrid[x][y];
     for (int xx = x - 1; xx <= (int) x + 1; xx++) {
         for (int yy = y - 1; yy <= (int) y + 1; yy++) {
             if (0 <= yy && yy <= (int) gridHeight - 1 && 0 <= xx && xx <= (int) gridWidth - 1 && !(xx == (int) x && yy == (int) y))
-                info->get(oldGrid[xx][yy])++;
+                info->getRef(oldGrid[xx][yy])++;
         }
     }
     return info;
@@ -442,15 +460,15 @@ void CellularAutomaton::createGrid(size_t w, size_t h)
 void CellularAutomaton::deleteGrid()
 {
     if (grid != nullptr) {
-        for (size_t r = 0; r < gridHeight; r++) {
-            delete [] grid[r];
+        for (size_t x = 0; x < gridWidth; x++) {
+            delete [] grid[x];
         }
         delete [] grid;
     }
 
     if (oldGrid != nullptr) {
-        for (size_t r = 0; r < gridHeight; r++) {
-            delete [] oldGrid[r];
+        for (size_t x = 0; x < gridHeight; x++) {
+            delete [] oldGrid[x];
         }
         delete [] oldGrid;
     }

@@ -1,3 +1,22 @@
+/* Copyright 2014 Wojciech Matusiak
+ *
+ * This file is part of CellularAutomatonCreator.
+ *
+ * CellularAutomatonCreator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CellularAutomatonCreator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CellularAutomatonCreator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "PopulationViewWidget.hpp"
 #include "MainWindow.hpp"
 
@@ -113,17 +132,6 @@ void PopulationViewWidget::resetGrid()
 }
 
 
-void PopulationViewWidget::makeRandomGrid()
-{
-    for (int x = 0; x < gridSize.width(); x++) {
-        for (int y = 0; y < gridSize.height(); y++) {
-            world->set(x, y,rand() % STATUS_NUMBER);
-        }
-    }
-    update(0, 0, width(), height());
-}
-
-
 void PopulationViewWidget::setBrush(StatusT brush)
 {
     if (STATUS_NUMBER <= brush)
@@ -138,6 +146,9 @@ void PopulationViewWidget::resizeGrid(size_t width, size_t height)
 
     gridSize.setWidth(width);
     gridSize.setHeight(height);
+
+    countDrawParams();
+    update(0, 0, this->width(), this->height());
 }
 
 
@@ -152,4 +163,10 @@ void PopulationViewWidget::countDrawParams()
     cellSize = std::min((width() - 2 * minMargin) / gridSize.width(), (height() - 2 * minMargin) / gridSize.height());
     hmargin = (width() - cellSize * gridSize.width()) / 2;
     vmargin = (height() - cellSize * gridSize.height()) / 2;
+}
+
+
+StatusT PopulationViewWidget::getBrush()
+{
+    return statusBrush;
 }

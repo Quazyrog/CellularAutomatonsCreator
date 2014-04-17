@@ -17,35 +17,57 @@
  */
 
 
-#ifndef CELLINFO_HPP
-#define CELLINFO_HPP
+#ifndef COLORSETTINGSDIALOG_HPP
+#define COLORSETTINGSDIALOG_HPP
 
-#include <cstring>
-#include <iostream>
-#include <QString>
+#include <QDialog>
+#include <QFormLayout>
+#include <QSpinBox>
+#include <QWidget>
+#include <QColor>
+#include <QPainter>
 
-typedef unsigned char StatusT;
-
-
-
-const int STATUS_NUMBER = 32;
-
+#include "CellInfo.hpp"
 
 
-class CellInfo {
-private:
-    StatusT neighborhood[STATUS_NUMBER];
-    StatusT myStat;
-    StatusT k;
+
+class MainWindow;
+
+
+class ColorPreview : public QWidget
+{
+    Q_OBJECT
+
+    QPainter *painter;
+    QColor color;
+
+    void paintEvent(QPaintEvent *e);
+
 public:
-    CellInfo();
+    ColorPreview(QWidget *parent = 0);
 
-    StatusT me() const;
-    StatusT &meRef();
-    StatusT get(int s) const;
-    StatusT &getRef(int s);
-
-    friend std::ostream &operator<< (std::ostream &out, const CellInfo obj);
+    void setColor(int red, int green, int blue);
 };
 
-#endif // CELLINFO_HPP
+
+class ColorSettingsDialog : public QDialog
+{
+    Q_OBJECT
+
+    MainWindow *mainWindow;
+
+    ColorPreview *colorPreview;
+
+    QSpinBox *status, *red, *green, *blue;
+    QFormLayout *layout;
+
+public:
+    ColorSettingsDialog(MainWindow *parent);
+
+public slots:
+    void updateColorPreview();
+    void updateRGB();
+
+};
+
+#endif // COLORSETTINGSDIALOG_HPP

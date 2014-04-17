@@ -9,20 +9,20 @@ QMAKE_CXXFLAGS += -std=c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = AutomatyKomorkowe
+TARGET = CellularAutomatonCreator
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        MainWindow.cpp \
+    MainWindow.cpp \
     PopulationViewWidget.cpp \
     GridSettingsWindow.cpp \
     CellInfo.cpp \
     CellularAutomaton.cpp \
     AutomatonScriptEditor.cpp \
     ScriptViewWidget.cpp \
-    Exceptions.cpp \
-    BrickEditDialog.cpp
+    BrickEditDialog.cpp \
+    ColorSettingsDialog.cpp
     
 HEADERS  += MainWindow.hpp \
     PopulationViewWidget.hpp \
@@ -31,8 +31,8 @@ HEADERS  += MainWindow.hpp \
     CellularAutomaton.hpp \
     AutomatonScriptEditor.hpp \
     ScriptViewWidget.hpp \
-    Exceptions.hpp \
-    BrickEditDialog.hpp
+    BrickEditDialog.hpp \
+    ColorSettingsDialog.hpp
     
 RESOURCES += \
     Icons.qrc

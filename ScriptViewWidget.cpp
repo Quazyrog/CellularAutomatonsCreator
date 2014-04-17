@@ -1,6 +1,38 @@
+/* Copyright 2014 Wojciech Matusiak
+ *
+ * This file is part of CellularAutomatonCreator.
+ *
+ * CellularAutomatonCreator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CellularAutomatonCreator is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CellularAutomatonCreator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "ScriptViewWidget.hpp"
 
 #include "MainWindow.hpp"
+
+
+
+ScriptViewWidget::Brick *ScriptViewWidget::Brick::deepest()
+{
+    if (under == nullptr) {
+        return this;
+    }
+
+    Brick *result = under;
+    for (; result->after != nullptr; result = result->after);
+    return result->deepest();
+}
 
 
 ScriptViewWidget::Brick::~Brick()
@@ -146,7 +178,7 @@ void ScriptViewWidget::setHorizontalSpacing(int value)
 
 void ScriptViewWidget::eraseSelected()
 {
-    if (rows == 1) {
+    if (firstBrick->after == nullptr && selected == firstBrick) {
         QMessageBox err(this);
         err.setIcon(QMessageBox::Critical);
         err.setWindowTitle(tr("Błąd"));
@@ -154,7 +186,6 @@ void ScriptViewWidget::eraseSelected()
         err.exec();
         return;
     }
-
 
     QMessageBox confirm(this);
     confirm.setIcon(QMessageBox::Question);
@@ -165,51 +196,35 @@ void ScriptViewWidget::eraseSelected()
         return;
     }
 
-
-
-    Brick *newSelection;
+    Brick *newSelection = selected->parent;
     if (firstBrick == selected) {
         firstBrick = selected->after;
-        delete selected;
         newSelection = firstBrick;
-    } else if (selected->column == 0) {
-        newSelection = selected->parent;
-
-        /* Remove from tree */
+        firstBrick->prev = nullptr;
+        firstBrick->parent = nullptr;
+    } else if (selected->parent->after == selected) {
         selected->parent->after = selected->after;
         if (selected->after != nullptr) {
             selected->after->parent = selected->parent;
         }
-
-        /* Remove from list */
-        Brick *deepest;
-        for (deepest = selected; deepest->under != nullptr; deepest = deepest->under);
-        if (deepest->next != nullptr) {
-            deepest->next->prev = selected->prev;
-        }
-        if (selected->prev != nullptr) {
-            selected->prev->next = deepest->next;
-        }
-
-        delete selected;
     } else {
-        newSelection = selected->parent;
-
-        /* Remove from tree */
         selected->parent->under = selected->after;
-
-        /* Remove from list */
-        Brick *deepest;
-        for (deepest = selected; deepest->under != nullptr; deepest = deepest->under);
-        if (deepest->next != nullptr) {
-            deepest->next->prev = selected->prev;
+        if (selected->after != nullptr) {
+            selected->after->parent = selected->parent;
         }
-        if (selected->prev != nullptr) {
-            selected->prev->next = deepest->next;
-        }
-
-        delete selected;
     }
+
+    Brick *deepest;
+    for (deepest = selected; deepest->under != nullptr; deepest = deepest->under);
+    if (deepest->next != nullptr) {
+        deepest->next->prev = selected->prev;
+    }
+    if (selected->prev != nullptr) {
+        selected->prev->next = deepest->next;
+    }
+
+    delete selected;
+
     selected = newSelection;
 
     mkSize(true);
@@ -250,17 +265,10 @@ void ScriptViewWidget::addAfterSelected()
         return;
     }
     data = dialog.getData();
-    Brick *inserted = createBrick(data.left, data.op, data.right, data.status), *lastSon;
+    Brick *inserted = createBrick(data.left, data.op, data.right, data.status);
     inserted->column = selected->column;
 
-    if (selected->under != nullptr) {
-        lastSon = selected->under;
-        for (; lastSon->after != nullptr; lastSon = lastSon->after);
-        for (; lastSon->under != nullptr; lastSon = lastSon->under);
-        addBrickToList(lastSon, inserted);
-    } else {
-        addBrickToList(selected, inserted);
-    }
+    addBrickToList(selected->deepest(), inserted);
 
     inserted->after = selected->after;
     selected->after = inserted;
