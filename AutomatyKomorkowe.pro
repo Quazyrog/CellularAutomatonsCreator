@@ -13,26 +13,16 @@ TARGET = CellularAutomatonCreator
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
+SOURCES += main.cpp \
     MainWindow.cpp \
-    PopulationViewWidget.cpp \
-    GridSettingsWindow.cpp \
-    CellInfo.cpp \
     CellularAutomaton.cpp \
-    AutomatonScriptEditor.cpp \
-    ScriptViewWidget.cpp \
-    BrickEditDialog.cpp \
-    ColorSettingsDialog.cpp
-    
-HEADERS  += MainWindow.hpp \
-    PopulationViewWidget.hpp \
-    GridSettingsWindow.hpp \
-    CellInfo.hpp \
+    Exception.cpp \
+    GridViewer.cpp \
+    StateSwitchWindow.cpp
+
+HEADERS  += \
+    MainWindow.hpp \
     CellularAutomaton.hpp \
-    AutomatonScriptEditor.hpp \
-    ScriptViewWidget.hpp \
-    BrickEditDialog.hpp \
-    ColorSettingsDialog.hpp
-    
-RESOURCES += \
-    Icons.qrc
+    Exception.hpp \
+    GridViewer.hpp \
+    StateSwitchWindow.hpp
