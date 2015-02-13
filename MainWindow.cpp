@@ -1,4 +1,4 @@
-﻿/* Copyright 2014 Wojciech Matusiak
+﻿/* Copyright 2014, 2015 Wojciech Matusiak
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    _automaton = new CellularAutomaton(4, 40, 30);
+    _automaton = new Scripting::CellularAutomaton(4, 40, 30);
 
     _gridViewer = new GridViewer(this);
     _gridViewer->setDisplayedAutomaton(_automaton);

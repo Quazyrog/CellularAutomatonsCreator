@@ -1,4 +1,4 @@
-﻿/* Copyright 2014 Wojciech Matusiak
+﻿/* Copyright 2014, 2015 Wojciech Matusiak
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,15 @@
 
 #include "Exception.hpp"
 
-class CellularAutomaton;
+namespace Scripting {
+    class CellularAutomaton;
+}
 
 
 class GridViewer : public QWidget
 {
 private:
-    CellularAutomaton *_automaton;
+    Scripting::CellularAutomaton *_automaton;
 
     QPainter *_painter;
 
@@ -50,7 +52,7 @@ public:
     inline int getLeftMargin() const;
     inline int getTopMargin() const;
 
-    void setDisplayedAutomaton(CellularAutomaton *automaton) throw (Exceptions::NullPointerException);
+    void setDisplayedAutomaton(Scripting::CellularAutomaton *automaton) throw (Exceptions::NullPointerException);
 
     quint16 getStateBrush() const;
     void setStateBrush(quint16 brush) throw (Exceptions::IllegalArgumentException);

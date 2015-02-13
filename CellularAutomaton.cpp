@@ -1,4 +1,4 @@
-﻿/* Copyright 2014 Wojciech Matusiak
+﻿/* Copyright 2014, 2015 Wojciech Matusiak
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,9 @@
 
 #include "CellularAutomaton.hpp"
 
+
+namespace Scripting
+{
 
 const size_t CellularAutomaton::STATES_LIMIT = 65535;
 
@@ -199,3 +202,4 @@ throw (Exceptions::IndexOutOfBoundsException)
     return _currentGeneration[x][y];
 }
 
+}

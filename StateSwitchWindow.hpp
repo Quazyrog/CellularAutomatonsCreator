@@ -27,7 +27,9 @@
 #include <QFormLayout>
 #include <QLabel>
 
-class CellularAutomaton;
+namespace Scripting {
+    class CellularAutomaton;
+}
 class GridViewer;
 
 
@@ -36,7 +38,7 @@ class StateInfoWidget : public QWidget
 {
     Q_OBJECT
 
-    CellularAutomaton *_automaton;
+    Scripting::CellularAutomaton *_automaton;
     QFormLayout *_layout;
     QLabel *_numberDisplay;
     QLabel *_numberLabel;
@@ -46,7 +48,7 @@ class StateInfoWidget : public QWidget
     QLabel *_colorLabel;
 
 public:
-    StateInfoWidget(CellularAutomaton *automaton, QWidget *parent);
+    StateInfoWidget(Scripting::CellularAutomaton *automaton, QWidget *parent);
 
     void updateDisplays(quint16 state);
 };
@@ -59,10 +61,10 @@ class StatesTableModel :
 {
     Q_OBJECT
 
-    CellularAutomaton *_automaton;
+    Scripting::CellularAutomaton *_automaton;
 
 public:
-    StatesTableModel(CellularAutomaton *automaton, QObject *parent);
+    StatesTableModel(Scripting::CellularAutomaton *automaton, QObject *parent);
 
     int rowCount(const QModelIndex &) const override;
 
@@ -84,7 +86,7 @@ class StateSwitchWidget : public QWidget
     StateInfoWidget *_infoWidget;
 
 public:
-    StateSwitchWidget(CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent);
+    StateSwitchWidget(Scripting::CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent);
 
 public slots:
     void selectedBrushChange(const QItemSelection &, const QItemSelection &);
@@ -99,7 +101,7 @@ class StateSwitchDock : public QDockWidget
     QWidget *_widget;
 
 public:
-    StateSwitchDock(CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent);
+    StateSwitchDock(Scripting::CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent);
 
 };
 

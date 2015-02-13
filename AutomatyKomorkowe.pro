@@ -18,11 +18,13 @@ SOURCES += main.cpp \
     CellularAutomaton.cpp \
     Exception.cpp \
     GridViewer.cpp \
-    StateSwitchWindow.cpp
+    StateSwitchWindow.cpp \
+    Calculator.cpp
 
 HEADERS  += \
     MainWindow.hpp \
     CellularAutomaton.hpp \
     Exception.hpp \
     GridViewer.hpp \
-    StateSwitchWindow.hpp
+    StateSwitchWindow.hpp \
+    Calculator.hpp

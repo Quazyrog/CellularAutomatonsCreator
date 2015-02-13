@@ -1,4 +1,4 @@
-﻿/* Copyright 2014 Wojciech Matusiak
+﻿/* Copyright 2014, 2015 Wojciech Matusiak
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ void GridViewer::paintEvent(QPaintEvent *event)
 }
 
 
-void GridViewer::setDisplayedAutomaton(CellularAutomaton *automaton) throw (Exceptions::NullPointerException)
+void GridViewer::setDisplayedAutomaton(Scripting::CellularAutomaton *automaton) throw (Exceptions::NullPointerException)
 {
     if (automaton == nullptr)
         throw Exceptions::NullPointerException(__FILE__, __LINE__, "Parameter automaton is NULL");

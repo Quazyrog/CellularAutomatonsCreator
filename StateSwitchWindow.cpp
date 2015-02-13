@@ -21,7 +21,7 @@
 #include "GridViewer.hpp"
 
 
-StateInfoWidget::StateInfoWidget(CellularAutomaton *automaton, QWidget *parent):
+StateInfoWidget::StateInfoWidget(Scripting::CellularAutomaton *automaton, QWidget *parent):
     QWidget(parent)
 {
     _automaton = automaton;
@@ -53,7 +53,7 @@ void StateInfoWidget::updateDisplays(quint16 state)
 }
 
 
-StatesTableModel::StatesTableModel(CellularAutomaton *automaton, QObject *parent):
+StatesTableModel::StatesTableModel(Scripting::CellularAutomaton *automaton, QObject *parent):
     QAbstractListModel(parent)
 {
     _automaton = automaton;
@@ -86,7 +86,7 @@ void StatesTableModel::statesModified(quint16 state)
 }
 
 
-StateSwitchWidget::StateSwitchWidget(CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent) :
+StateSwitchWidget::StateSwitchWidget(Scripting::CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent) :
     QWidget(parent)
 {
     _statesModel = new StatesTableModel(automaton, this);
@@ -113,7 +113,7 @@ void StateSwitchWidget::selectedBrushChange(const QItemSelection &, const QItemS
 }
 
 
-StateSwitchDock::StateSwitchDock(CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent):
+StateSwitchDock::StateSwitchDock(Scripting::CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent):
     QDockWidget(parent)
 {
     _widget = new StateSwitchWidget(automaton, viewer, this);

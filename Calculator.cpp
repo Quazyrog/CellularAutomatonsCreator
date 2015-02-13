@@ -1,4 +1,4 @@
-﻿/* Copyright 2014, 2015 Wojciech Matusiak
+/* Copyright 2015 Wojciech Matusiak
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,40 +14,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#include "Calculator.hpp"
 
-#include <QtGui>
-#include <QMainWindow>
-#include <QStatusBar>
-#include <QMenuBar>
+namespace Scripting
+{
 
-class GridViewer;
-class StateSwitchDock;
-namespace Scripting {
-    class CellularAutomaton;
+CalculatorFunction2D::name()
+{
+    return std::string("foo");
 }
 
 
-class MainWindow : public QMainWindow
+CalculatorFunction2D::valueOf(double arg) const
 {
-    Q_OBJECT
-private:
-    QStatusBar *_statusBar;
+    return 2 * arg + 1;
+}
 
-    void buildMenuBar();
-    QMenuBar *_menuBar;
-    QMenu *_fileMenu;
 
-    GridViewer *_gridViewer;
-    Scripting::CellularAutomaton *_automaton;
-    StateSwitchDock *_stateSwitch;
+CalculatorFunction2D::isVolatile()
+{
+    return false;
+}
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
 
-    virtual ~MainWindow();
+CalculatorFunction3D::name()
+{
+    return std::string("foo");
+}
 
-};
 
-#endif // MAINWINDOW_HPP
+CalculatorFunction3D::valueOf(double arg) const
+{
+    return 2 * arg + 1;
+}
+
+
+CalculatorFunction3D::isVolatile()
+{
+    return false;
+}
+
+
+
+Calculator::Calculator()
+{
+
+}
+
+Calculator::~Calculator()
+{
+
+}
+
+}

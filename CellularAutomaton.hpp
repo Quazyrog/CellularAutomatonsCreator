@@ -1,4 +1,4 @@
-﻿/* Copyright 2014 Wojciech Matusiak
+﻿/* Copyright 2014, 2015 Wojciech Matusiak
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,10 @@
 #include <QObject>
 
 #include <Exception.hpp>
+
+
+namespace Scripting
+{
 
 /**
  * @brief The CellularAutomaton class represents cellular automaton.
@@ -225,5 +229,7 @@ signals:
      */
     void registerChanged(quint16 state);
 };
+
+}
 
 #endif // CELLULARAUTOMATON_HPP
