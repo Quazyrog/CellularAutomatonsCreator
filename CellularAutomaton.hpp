@@ -22,6 +22,7 @@
 #include <QString>
 #include <QDebug>
 #include <QObject>
+#include <QDebug>
 
 #include <Exception.hpp>
 
@@ -41,6 +42,17 @@ class CellularAutomaton:
     Q_OBJECT
 
 private:
+    enum class Instruction : char {
+        RETURN_STATE,
+        COMPARATOR_EQUAL,
+        COMPARATOR_DIFFERENT,
+        COMPARATOR_GREATER,
+        COMPARATOR_GREATEER_EQUAL,
+        COMPARATOR_LESS,
+        COMPARATOR_LESS_EQUAL
+    };
+
+
     /**
      * @brief The StateRegisterEntry struct
      * This struct is used to build states register. Each instance contains informations about one state available in the automaton.
@@ -49,22 +61,15 @@ private:
     {
         /** @brief Name for this state. Multiple states can have the same names. */
         QString name;
+
         /** @brief Color used to paint hist state. */
         QColor color;
     };
 
-public:
-    class StateLimitReachedException : public Exceptions::Exception
-    {
-    public:
-        StateLimitReachedException(const char *file, const int line) :
-            Exception(file, line, QString("Cannot create new state -- limit reached!"))
-        {}
-
-        virtual QString getAsString() const
-        {
-            return QString().sprintf("StateLimitReachedException [%s:%i]-> ", _file, _line) + _message;
-        }
+    struct ScriptLine {
+        Instruction instruction;
+        unsigned int data1;
+        unsigned int data2;
     };
 
 private:
@@ -85,6 +90,9 @@ private:
 
     /** @brief Contains true if and only if construction of object is finished. */
     bool _constructed;
+
+
+    ScriptLine *_rule;
 
 
     /**
@@ -147,7 +155,7 @@ public:
      * @return number of new state
      */
     quint16 newState(const QString name, const QColor color)
-    throw (StateLimitReachedException);
+    throw (Exceptions::StateLimitReachedException);
 
     /**
      * @brief setStateColor

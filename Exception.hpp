@@ -1,5 +1,5 @@
 ﻿/** @file
- *  @brief Header for basic exceptions classes.
+ *  @brief Header for exceptions classes.
  */
 /* Copyright 2014 Wojciech Matusiak
  *
@@ -21,112 +21,108 @@
 #define EXCEPTION_HPP
 
 #include <QString>
+#include <exception>
 
 #include <cstdio>
 
 namespace Exceptions {
-
-
-#define DEBUG_MESSAGE(format, args...) fprintf(stderr, "[%s:%i]> " format, __FILE__, __LINE__, ##args)
-
-/**
- * The Exception class is used to handle exceptions. All other exception classes inherits from this one. It contains informations about the point where the exception was thrown -- file and line.
- * It may also contain a message with detailed description. All other exceptions classes are subclasses of this one.
- *
- * Exceptions should be thrown using RAISE_EXCEPTION macro (or RAISE_EXCEPTION_NM when they are thrown without message).
- */
-class Exception
-{
-protected:
-    /** File where the exception was thrown. */
-    const char *_file;
-    /** Line where exception was thrown. */
-    int _line;
-    /** Message from place where the exception was thrown. */
-    QString _message;
-
-public:
-    /**
-     * @brief Exception's class constructor.
-     * @param file file where exception was thrown
-     * @param line number of line where exception was thrown
-     * @param message message stored inm exception's instance
-     */
-    Exception(const char *file, const int line, QString message);
-
-    /**
-     * @brief Returns name of file where exception was thrown.
-     * @return path to source file where exception was thrown (as <code>const char *</code>).
-     */
-    const char *getFile() const;
-
-    /**
-     * @brief Returns number of line in source file, where exception wsa thrown.
-     * @return number of line in source file, where exception wsa thrown.
-     */
-    int getLine() const;
-
-    /**
-     * @brief Returns exception's message.
-     * @return message saved in this exception
-     */
-    QString getMessage() const;
-
-    /**
-     * @brief Returns all informations stored in this class in one string.
-     * @return <code>QString</code> in following format: ExceptionClassName [PathToSourceFile:LineInSourceFile]-> Message
-     */
-    virtual QString getAsString() const;
-};
 
 /**
  * @brief The IllegalArgumentException class is thrown when value of argument passed to a function is invalid.
  *
  * If the argument is array's index, you should throw <code>IndexOutOfBoundsException</code>. If the argument is pointer and it's value is null, you should throw <code>NullPointerException</code>.
  */
-class IllegalArgumentException : public Exception
+class IllegalArgumentException : public std::exception
 {
 public:
-    IllegalArgumentException(const char *file, const int line, QString message);
-
-    virtual QString getAsString() const;
+    virtual const char* what() const noexcept override;
 };
 
 
 /**
  * @brief The IndexOutOfBoundsException class is thrown when trying to acces array's index witch is out of bound.
  */
-class IndexOutOfBoundsException : public Exception
+class IndexOutOfBoundsException : public std::exception
 {
 public:
-    IndexOutOfBoundsException(const char *file, const int line, QString message);
-
-    virtual QString getAsString() const;
+    virtual const char* what() const noexcept override;
 };
-
 
 
 /**
  * @brief The NullPointerException class is thrown when pointer witch shouldn't be null, is null.
  */
-class NullPointerException : public Exception
+class NullPointerException : public std::exception
 {
 public:
-    NullPointerException(const char *file, const int line, QString message);
-
-    virtual QString getAsString() const;
+    virtual const char* what() const noexcept override;
 };
-
 
 /**
  * @brief The IOException class is thrown after occurrence of error when reading ro writting to file.
  */
-class IOException : public Exception
+class IOException : public std::exception
 {
 public:
-    IOException(const char *file, const int line, QString message);
+    virtual const char* what() const noexcept override;
+};
 
-    virtual QString getAsString() const;
+
+/**
+ * @brief The RuntimeException may be thrown, when thing that shouldn't happen happens...
+ */
+class RuntimeException : public std::exception
+{
+public:
+    virtual const char* what() const noexcept override;
+};
+
+
+/**
+ * @brief The StateLimitReachedException class is thrown when requesting to add new state to cellukar automaton's register, and the state limit was already reached.
+ * @see CellularAutomaton::STATES_LIMIT
+ */
+class StateLimitReachedException : public std::exception
+{
+public:
+    virtual const char* what() const noexcept override;
+};
+
+
+class MathSyntaxErrorException : public std::exception
+{
+public:
+    enum Error {
+        UNCLOSED_PARENTHESES,
+        UNEXPECTED_CHARACTER,
+        UNKNOWN_FUNCTION,
+        INVALID_ARGUMENTS_NUMBER
+    };
+
+private:
+    int _where;
+    Error _error;
+
+public:
+    MathSyntaxErrorException(Error what, int where);
+    virtual const char* what() const noexcept override;
+};
+
+
+class ArithmeticErrorException : public std::exception
+{
+public:
+    enum Error {
+        DIVISION_BY_ZERO,
+        INVALID_ARGUMENT
+    };
+
+private:
+    Error _error;
+
+public:
+    ArithmeticErrorException(Error error);
+    virtual const char* what() const noexcept override;
 };
 
 }

@@ -18,86 +18,81 @@
 
 namespace Exceptions {
 
-Exception::Exception(const char *file, const int line, QString message)
+const char *IllegalArgumentException::what()  const noexcept
 {
-    _file = file;
-    _line = line;
-    _message = message;
+    return "IllegalArgumentException";
 }
 
 
-const char *Exception::getFile() const
+const char *IndexOutOfBoundsException::what()  const noexcept
 {
-    return _file;
-}
-
-int Exception::getLine() const
-{
-    return _line;
+    return "IndexOutOfBoundsException";
 }
 
 
-QString Exception::getMessage() const
+const char *NullPointerException::what()  const noexcept
 {
-    return _message;
+    return "NullPointerException";
 }
 
 
-QString Exception::getAsString() const
+const char *IOException::what()  const noexcept
 {
-    return QString().sprintf("Exception [%s:%i]-> ", _file, _line) + _message;
+    return "IOException";
 }
 
 
-IllegalArgumentException::IllegalArgumentException(const char *file, const int line, QString message) :
-    Exception(file, line, message)
+const char *RuntimeException::what()  const noexcept
 {
-
+    return "RuntimeException";
 }
 
 
-QString IllegalArgumentException::getAsString() const
+const char *StateLimitReachedException::what()  const noexcept
 {
-    return QString().sprintf("IllegalArgumentException [%s:%i]-> ", _file, _line) + _message;
+    return "StateLimitReachedException";
 }
 
 
-IndexOutOfBoundsException::IndexOutOfBoundsException(const char *file, const int line, QString message) :
-    Exception(file, line, message)
+MathSyntaxErrorException::MathSyntaxErrorException(Error what, int where)
 {
-
+    _error = what;
+    _where = where;
 }
 
 
-QString IndexOutOfBoundsException::getAsString() const
+const char *MathSyntaxErrorException::what() const noexcept
 {
-    return QString().sprintf("IndexOutOfBoundsException [%s:%i]-> ", _file, _line) + _message;
+    QString description;
+    switch (_error) {
+    case UNCLOSED_PARENTHESES:
+        return "MathSyntaxErrorException – unclosed parentheses";
+    case UNEXPECTED_CHARACTER:
+        return "MathSyntaxErrorException – unexpected character";
+    case UNKNOWN_FUNCTION:
+        return "MathSyntaxErrorException – unknown function";
+    case INVALID_ARGUMENTS_NUMBER:
+        return "MathSyntaxErrorException – invalid arguments number";
+    }
+    return "MathSyntaxErrorException";
 }
 
 
-NullPointerException::NullPointerException(const char *file, const int line, QString message) :
-    Exception(file, line, message)
+ArithmeticErrorException::ArithmeticErrorException(Error what)
 {
-
+    _error = what;
 }
 
 
-QString NullPointerException::getAsString() const
+const char *ArithmeticErrorException::what() const noexcept
 {
-    return QString().sprintf("NullPointerException [%s:%i]-> ", _file, _line) + _message;
-}
-
-
-IOException::IOException(const char *file, const int line, QString message) :
-    Exception(file, line, message)
-{
-
-}
-
-
-QString IOException::getAsString() const
-{
-    return QString().sprintf("IOException [%s:%i]-> ", _file, _line) + _message;
+    switch (_error) {
+    case DIVISION_BY_ZERO:
+        return "ArithmeticErrorException – division by 0";
+    case INVALID_ARGUMENT:
+        return "ArithmeticErrorException – division by 0";
+    }
+    return "ArithmeticErrorException";
 }
 
 }

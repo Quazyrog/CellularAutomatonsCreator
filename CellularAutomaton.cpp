@@ -30,6 +30,9 @@ CellularAutomaton::CellularAutomaton()
     _width = 0;
     _currentGeneration = nullptr;
     _oldGeneration = nullptr;
+
+    _rule = nullptr;
+
     _constructed = true;
 }
 
@@ -41,8 +44,8 @@ CellularAutomaton::CellularAutomaton(const quint16 statesNumber) :
     try {
         for (quint16 i = 0; i < statesNumber; ++i)
             newState(QString("STATE") + QString::number(i), QColor(qrand() % 256, qrand() % 256, qrand() % 256));
-    } catch (StateLimitReachedException e) {
-        DEBUG_MESSAGE("States limit reached!\n");
+    } catch (Exceptions::StateLimitReachedException e) {
+        qWarning() << "States limit reached. Only " << _stateRegister.size() << " states were created.";
     }
     _constructed = true;
 }
@@ -83,10 +86,10 @@ size_t CellularAutomaton::getStatesNumber()
 
 
 quint16 CellularAutomaton::newState(const QString name, const QColor color)
-throw (StateLimitReachedException)
+throw (Exceptions::StateLimitReachedException)
 {
     if (static_cast<size_t>(_stateRegister.size()) >= STATES_LIMIT)
-        throw StateLimitReachedException(__FILE__, __LINE__);
+        throw Exceptions::StateLimitReachedException();
 
     StateRegisterEntry entry;
     entry.name = name;
@@ -106,7 +109,7 @@ void CellularAutomaton::setStateColor(quint16 state, QColor newColor)
 throw (Exceptions::IndexOutOfBoundsException)
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
-        throw Exceptions::IndexOutOfBoundsException(__FILE__, __LINE__, "");
+        throw Exceptions::IndexOutOfBoundsException();
 
     if (_constructed)
         emit(registerChanged(state));
@@ -119,7 +122,7 @@ QColor CellularAutomaton::getStateColor(quint16 state) const
 throw (Exceptions::IndexOutOfBoundsException)
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
-        throw Exceptions::IndexOutOfBoundsException(__FILE__, __LINE__, "");
+        throw Exceptions::IndexOutOfBoundsException();
 
     return _stateRegister[state].color;
 }
@@ -129,7 +132,7 @@ void CellularAutomaton::setStateName(quint16 state, QString newName)
 throw (Exceptions::IndexOutOfBoundsException)
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
-        throw Exceptions::IndexOutOfBoundsException(__FILE__, __LINE__, "");
+        throw Exceptions::IndexOutOfBoundsException();
 
     if (_constructed)
         emit(registerChanged(state));
@@ -142,7 +145,7 @@ QString CellularAutomaton::getStateName(quint16 state) const
 throw (Exceptions::IndexOutOfBoundsException)
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
-        throw Exceptions::IndexOutOfBoundsException(__FILE__, __LINE__, "");
+        throw Exceptions::IndexOutOfBoundsException();
 
     return _stateRegister[state].name;
 }
@@ -185,9 +188,9 @@ void CellularAutomaton::setCellState(size_t x, size_t y, quint16 state)
 throw (Exceptions::IllegalArgumentException, Exceptions::IndexOutOfBoundsException)
 {
     if (state >= getStatesNumber())
-        throw Exceptions::IllegalArgumentException(__FILE__, __LINE__, "");
+        throw Exceptions::IllegalArgumentException();
     if (y >= _height || x >= _width)
-        throw Exceptions::IndexOutOfBoundsException(__FILE__, __LINE__, "");
+        throw Exceptions::IndexOutOfBoundsException();
 
     _currentGeneration[x][y] = state;
 }
@@ -197,7 +200,7 @@ quint16 CellularAutomaton::getCellState(size_t x, size_t y) const
 throw (Exceptions::IndexOutOfBoundsException)
 {
     if (y >= _height || x >= _width)
-        throw Exceptions::IndexOutOfBoundsException(__FILE__, __LINE__, "");
+        throw Exceptions::IndexOutOfBoundsException();
 
     return _currentGeneration[x][y];
 }

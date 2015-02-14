@@ -37,7 +37,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     buildMenuBar();
 
-    resize(800, 600);
+    QSettings settings(".cacsettings", QSettings::NativeFormat);
+    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+    restoreState(settings.value("MainWindow/windowState").toByteArray());
+
     setStatusTip("Done");
 }
 
@@ -56,4 +59,13 @@ void MainWindow::buildMenuBar()
 MainWindow::~MainWindow()
 {
     delete _automaton;
+}
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings(".cacsettings", QSettings::NativeFormat);
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    settings.setValue("MainWindow/windowState", saveState());
+    QMainWindow::closeEvent(event);
 }

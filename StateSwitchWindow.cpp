@@ -120,4 +120,5 @@ StateSwitchDock::StateSwitchDock(Scripting::CellularAutomaton *automaton, GridVi
     setWidget(_widget);
     setMinimumSize(150, 300);
     setWindowTitle("States palette");
+    setObjectName("StateSwitchDock");
 }

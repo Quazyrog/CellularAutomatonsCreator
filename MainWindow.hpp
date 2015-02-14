@@ -21,6 +21,7 @@
 #include <QMainWindow>
 #include <QStatusBar>
 #include <QMenuBar>
+#include <QSettings>
 
 class GridViewer;
 class StateSwitchDock;
@@ -42,6 +43,8 @@ private:
     GridViewer *_gridViewer;
     Scripting::CellularAutomaton *_automaton;
     StateSwitchDock *_stateSwitch;
+
+    void closeEvent(QCloseEvent *event) override;
 
 public:
     explicit MainWindow(QWidget *parent = 0);

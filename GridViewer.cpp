@@ -75,7 +75,7 @@ void GridViewer::paintEvent(QPaintEvent *event)
 void GridViewer::setDisplayedAutomaton(Scripting::CellularAutomaton *automaton) throw (Exceptions::NullPointerException)
 {
     if (automaton == nullptr)
-        throw Exceptions::NullPointerException(__FILE__, __LINE__, "Parameter automaton is NULL");
+        throw Exceptions::NullPointerException();
     _automaton = automaton;
 }
 
@@ -149,7 +149,7 @@ quint16 GridViewer::getStateBrush() const
 void GridViewer::setStateBrush(quint16 brush) throw (Exceptions::IllegalArgumentException)
 {
     if (brush >= _automaton->getStatesNumber())
-        throw Exceptions::IllegalArgumentException(__FILE__, __LINE__, "Given brush too big");
+        throw Exceptions::IllegalArgumentException();
 
     _stateBrush = brush;
 

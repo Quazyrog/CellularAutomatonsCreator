@@ -27,6 +27,9 @@
 
 int main(int argc, char *argv[])
 {
+    qSetMessagePattern("[%{file}:%{line} %{function}] %{type}:  %{message}");
+    qDebug() << "Starting CellularAutomatonCreator built" << __DATE__ << __TIME__;
+
     QApplication a(argc, argv);
 
     qsrand(static_cast<uint>(QTime::currentTime().msecsSinceStartOfDay()));
