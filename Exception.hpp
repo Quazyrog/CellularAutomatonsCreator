@@ -89,23 +89,18 @@ public:
 };
 
 
-class MathSyntaxErrorException : public std::exception
+class SyntaxErrorException : public std::exception
 {
-public:
-    enum Error {
-        UNCLOSED_PARENTHESES,
-        UNEXPECTED_CHARACTER,
-        UNKNOWN_FUNCTION,
-        INVALID_ARGUMENTS_NUMBER
-    };
-
 private:
     int _where;
-    Error _error;
+    QString _message;
 
 public:
-    MathSyntaxErrorException(Error what, int where);
+    SyntaxErrorException(int where, QString message);
     virtual const char* what() const noexcept override;
+
+    int where() const;
+    QString message() const;
 };
 
 

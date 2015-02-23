@@ -22,6 +22,11 @@
 #include <QStatusBar>
 #include <QMenuBar>
 #include <QSettings>
+#include <QAction>
+#include <QIcon>
+#include <QKeySequence>
+#include <QFileDialog>
+#include <QMessageBox>
 
 class GridViewer;
 class StateSwitchDock;
@@ -36,9 +41,13 @@ class MainWindow : public QMainWindow
 private:
     QStatusBar *_statusBar;
 
-    void buildMenuBar();
-    QMenuBar *_menuBar;
+    void createMenuBar();
     QMenu *_fileMenu;
+    QAction *_fileNewAction;
+    QAction *_fileOpenAction;
+    QAction *_fileSaveAction;
+    QAction *_fileSaveAsAction;
+    QAction *_fileCloseAction;
 
     GridViewer *_gridViewer;
     Scripting::CellularAutomaton *_automaton;
@@ -51,6 +60,8 @@ public:
 
     virtual ~MainWindow();
 
+public slots:
+    void openFile();
 };
 
 #endif // MAINWINDOW_HPP

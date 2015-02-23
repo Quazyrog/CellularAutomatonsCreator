@@ -16,22 +16,32 @@
 
 #include "CellularAutomaton.hpp"
 
+#include "Calculator.hpp"
+#include "FunctionOffset.hpp"
+#include "FunctionStat.hpp"
 
 namespace Scripting
 {
 
 const size_t CellularAutomaton::STATES_LIMIT = 65535;
+const size_t CellularAutomaton::SCRIPT_LENGTH_LIMIT = 1024;
+const size_t CellularAutomaton::GRID_SIZE_LIMIT = 60000;
 
 
 CellularAutomaton::CellularAutomaton()
 {
     _constructed = false;
+
+    _name = "New Automaton";
+
     _height = 0;
     _width = 0;
     _currentGeneration = nullptr;
     _oldGeneration = nullptr;
 
     _rule = nullptr;
+    _functionOffsetInstance = new FunctionOffset(this);
+    _functionStatInstance = new FunctionStat(this);
 
     _constructed = true;
 }
@@ -61,9 +71,22 @@ CellularAutomaton::CellularAutomaton(const quint16 statesNumber, const size_t wi
 CellularAutomaton::~CellularAutomaton()
 {
     deleteGrid();
+    delete [] _rule;
+    delete _functionOffsetInstance;
+    delete _functionStatInstance;
 }
 
 
+
+QString CellularAutomaton::name() const
+{
+    return _name;
+}
+
+void CellularAutomaton::setName(const QString &name)
+{
+    _name = name;
+}
 void CellularAutomaton::deleteGrid()
 {
     if (_oldGeneration != nullptr) {
@@ -79,14 +102,13 @@ void CellularAutomaton::deleteGrid()
 }
 
 
-size_t CellularAutomaton::getStatesNumber()
+size_t CellularAutomaton::statesNumber()
 {
     return _stateRegister.size();
 }
 
 
 quint16 CellularAutomaton::newState(const QString name, const QColor color)
-throw (Exceptions::StateLimitReachedException)
 {
     if (static_cast<size_t>(_stateRegister.size()) >= STATES_LIMIT)
         throw Exceptions::StateLimitReachedException();
@@ -106,7 +128,6 @@ throw (Exceptions::StateLimitReachedException)
 
 
 void CellularAutomaton::setStateColor(quint16 state, QColor newColor)
-throw (Exceptions::IndexOutOfBoundsException)
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
         throw Exceptions::IndexOutOfBoundsException();
@@ -118,8 +139,7 @@ throw (Exceptions::IndexOutOfBoundsException)
 }
 
 
-QColor CellularAutomaton::getStateColor(quint16 state) const
-throw (Exceptions::IndexOutOfBoundsException)
+QColor CellularAutomaton::stateColor(quint16 state) const
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
         throw Exceptions::IndexOutOfBoundsException();
@@ -129,7 +149,6 @@ throw (Exceptions::IndexOutOfBoundsException)
 
 
 void CellularAutomaton::setStateName(quint16 state, QString newName)
-throw (Exceptions::IndexOutOfBoundsException)
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
         throw Exceptions::IndexOutOfBoundsException();
@@ -141,8 +160,7 @@ throw (Exceptions::IndexOutOfBoundsException)
 }
 
 
-QString CellularAutomaton::getStateName(quint16 state) const
-throw (Exceptions::IndexOutOfBoundsException)
+QString CellularAutomaton::stateName(quint16 state) const
 {
     if (state >= static_cast<quint16>(_stateRegister.size()))
         throw Exceptions::IndexOutOfBoundsException();
@@ -151,13 +169,13 @@ throw (Exceptions::IndexOutOfBoundsException)
 }
 
 
-unsigned int CellularAutomaton::getGridWidth() const
+unsigned int CellularAutomaton::gridWidth() const
 {
     return _width;
 }
 
 
-unsigned int CellularAutomaton::getGridHeight() const
+unsigned int CellularAutomaton::gridHeight() const
 {
     return _height;
 }
@@ -165,8 +183,13 @@ unsigned int CellularAutomaton::getGridHeight() const
 
 void CellularAutomaton::resizeGrid(size_t width, size_t height)
 {
-    if (width == 0 || height == 0 || (width == _width && height == _height))
+    if (width == 0 || height == 0)
+        throw Exceptions::IllegalArgumentException();
+    if (width == _width && height == _height)
         return;
+
+    if (width * height > GRID_SIZE_LIMIT)
+        throw Exceptions::IndexOutOfBoundsException();
 
     deleteGrid();
 
@@ -185,9 +208,8 @@ void CellularAutomaton::resizeGrid(size_t width, size_t height)
 
 
 void CellularAutomaton::setCellState(size_t x, size_t y, quint16 state)
-throw (Exceptions::IllegalArgumentException, Exceptions::IndexOutOfBoundsException)
 {
-    if (state >= getStatesNumber())
+    if (state >= statesNumber())
         throw Exceptions::IllegalArgumentException();
     if (y >= _height || x >= _width)
         throw Exceptions::IndexOutOfBoundsException();
@@ -196,13 +218,181 @@ throw (Exceptions::IllegalArgumentException, Exceptions::IndexOutOfBoundsExcepti
 }
 
 
-quint16 CellularAutomaton::getCellState(size_t x, size_t y) const
-throw (Exceptions::IndexOutOfBoundsException)
+quint16 CellularAutomaton::cellState(size_t x, size_t y) const
 {
     if (y >= _height || x >= _width)
         throw Exceptions::IndexOutOfBoundsException();
 
     return _currentGeneration[x][y];
+}
+
+
+CellularAutomaton *CellularAutomaton::readFromFile(QString path)
+{
+    qDebug() << "Reading file" << path;
+    CellularAutomaton *result = new CellularAutomaton;
+
+    std::ifstream inputStream(path.toStdString());
+    if (!inputStream.is_open() || !inputStream.good()) {
+        qWarning() << "Failed to open " << path;
+        throw Exceptions::IOException();
+    }
+
+    std::string name;
+    getline(inputStream, name);
+    result->setName(QString::fromStdString(name));
+    qDebug() << "Name is" << QString::fromStdString(name);
+
+    size_t statesNumber;
+    inputStream >> statesNumber;
+    qDebug() << "Reading" << statesNumber << "states";
+    if (statesNumber > STATES_LIMIT)
+        throw Exceptions::SyntaxErrorException(-1, "States number bigger than limit");
+    for (quint16 i = 0; i < statesNumber; ++i) {
+        std::string name;
+        int r, g, b;
+        inputStream >> name >> r >> g >> b;
+        result->newState(QString::fromStdString(name), QColor(r, g, b));
+    }
+
+    size_t scriptLength;
+    inputStream >> scriptLength;
+    qDebug() << "Reading script of size" << scriptLength;
+    result->compileScript(inputStream, scriptLength);
+
+
+    unsigned int width, height;
+    inputStream >> width >> height;
+    qDebug() << "Reading grid of size" << width << "x" << height;
+    if (width * height == 0)
+        throw Exceptions::SyntaxErrorException(-1, "Grid size is 0");
+    if (width * height > GRID_SIZE_LIMIT)
+        throw Exceptions::SyntaxErrorException(-1, "Grid too large");
+    result->resizeGrid(width, height);
+    for (unsigned int y = 0; y < height; ++y) {
+        for (unsigned int x = 0; x < width; ++x) {
+            quint16 state;
+            inputStream >> state;
+            try {
+                result->setCellState(x, y, state);
+            } catch (Exceptions::IllegalArgumentException &except) {
+                throw Exceptions::SyntaxErrorException(-1, "Invalid state");
+            }
+        }
+    }
+
+    qDebug() << "File read successfully";
+    return result;
+}
+
+void CellularAutomaton::compileScript(std::istream &inputStream, size_t length)
+{
+    if (length > SCRIPT_LENGTH_LIMIT)
+        throw Exceptions::SyntaxErrorException(-1, "Script too long");
+
+    ScriptLine *compilationBuffer = new ScriptLine [length];
+    bool *definedLines = new bool [length];
+    memset(definedLines, 0, sizeof(bool) * length);
+    auto deleteArrays = [&]() {
+        delete [] compilationBuffer;
+        delete [] definedLines;
+    };
+
+    for (quint16 i = 0; i < length; ++i) {
+        size_t lineNumber;
+        inputStream >> lineNumber;
+        if (length <= lineNumber) {
+            deleteArrays();
+            throw Exceptions::SyntaxErrorException(-1, "Invalid line number");
+        }
+        if (definedLines[lineNumber]) {
+            deleteArrays();
+            throw Exceptions::SyntaxErrorException(lineNumber, "Line redefined");
+        }
+        definedLines[lineNumber] = true;
+
+        std::string token;
+        inputStream >> token;
+        ScriptLine &line = compilationBuffer[lineNumber];
+        if (token == "IF") {
+            std::string left, sign, right;
+            inputStream >> left >> sign >> right;
+            if (sign == "=")
+                line.instruction = Instruction::COMPARATOR_EQUAL;
+            if (sign == "<>")
+                line.instruction = Instruction::COMPARATOR_DIFFERENT;
+            if (sign == "<")
+                line.instruction = Instruction::COMPARATOR_GREATER;
+            if (sign == "<=")
+                line.instruction = Instruction::COMPARATOR_GREATEER_EQUAL;
+            if (sign == ">")
+                line.instruction = Instruction::COMPARATOR_LESS;
+            if (sign == ">=")
+                line.instruction = Instruction::COMPARATOR_LESS_EQUAL;
+
+            try {
+                line.leftExpression = new Calculator();
+                line.leftExpression->installFunction3D(_functionOffsetInstance);
+                line.leftExpression->installFunction2D(_functionStatInstance);
+                line.leftExpression->parseExpression(QString::fromStdString(left));
+
+                line.rightExpression = new Calculator();
+                line.rightExpression->installFunction3D(_functionOffsetInstance);
+                line.rightExpression->installFunction2D(_functionStatInstance);
+                line.rightExpression->parseExpression(QString::fromStdString(right));
+            } catch (Exceptions::SyntaxErrorException &err) {
+                deleteArrays();
+                throw Exceptions::SyntaxErrorException(lineNumber, err.message());
+            }
+
+            size_t thenGoto;
+            inputStream >> token;
+            if (token != "THEN") {
+                deleteArrays();
+                throw Exceptions::SyntaxErrorException(lineNumber, QString::fromStdString("Expected 'THEN' got '" + token + "'"));
+            }
+            inputStream >> thenGoto;
+            if (thenGoto >= length) {
+                deleteArrays();
+                throw Exceptions::SyntaxErrorException(lineNumber, "Invalid line number");
+            }
+            line.data1 = thenGoto;
+
+
+            size_t elseGoto;
+            inputStream >> token;
+            if (token != "ELSE") {
+                deleteArrays();
+                throw Exceptions::SyntaxErrorException(lineNumber, QString::fromStdString("Expected 'ELSE' got '" + token + "'"));
+            }
+            inputStream >> elseGoto;
+            if (elseGoto >= length) {
+                deleteArrays();
+                throw Exceptions::SyntaxErrorException(lineNumber, "Invalid line number");
+            }
+            line.data2 = elseGoto;
+        } else if (token == "STATE") {
+            line.instruction = Instruction::RETURN_STATE;
+            line.leftExpression = nullptr;
+            line.rightExpression = nullptr;
+
+            quint16 state;
+            inputStream >> state;
+            if (state >= statesNumber()) {
+                deleteArrays();
+                throw Exceptions::SyntaxErrorException(lineNumber, "No such state");
+            }
+            line.data1 = state;
+        } else {
+            deleteArrays();
+            throw Exceptions::SyntaxErrorException(lineNumber, QString::fromStdString("Unknown token '" + token + "'"));
+        }
+    }
+
+    delete [] definedLines;
+    delete [] _rule;
+    _rule = compilationBuffer;
+    _scriptSize = length;
 }
 
 }

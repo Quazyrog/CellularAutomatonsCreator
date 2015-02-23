@@ -19,7 +19,9 @@ SOURCES += main.cpp \
     Exception.cpp \
     GridViewer.cpp \
     StateSwitchWindow.cpp \
-    Calculator.cpp
+    Calculator.cpp \
+    FunctionOffset.cpp \
+    FunctionStat.cpp
 
 HEADERS  += \
     MainWindow.hpp \
@@ -27,4 +29,9 @@ HEADERS  += \
     Exception.hpp \
     GridViewer.hpp \
     StateSwitchWindow.hpp \
-    Calculator.hpp
+    Calculator.hpp \
+    FunctionOffset.hpp \
+    FunctionStat.hpp
+
+RESOURCES += \
+    Images.qrc

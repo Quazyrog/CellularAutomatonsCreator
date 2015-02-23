@@ -24,11 +24,17 @@
 #include <QObject>
 #include <QDebug>
 
+#include <fstream>
+#include <string>
+
 #include <Exception.hpp>
 
 
 namespace Scripting
 {
+class Calculator;
+class FunctionOffset;
+class FunctionStat;
 
 /**
  * @brief The CellularAutomaton class represents cellular automaton.
@@ -68,11 +74,15 @@ private:
 
     struct ScriptLine {
         Instruction instruction;
+        Calculator *leftExpression;
+        Calculator *rightExpression;
         unsigned int data1;
         unsigned int data2;
     };
 
 private:
+    QString _name;
+
     /** @brief Automaton's grid width. */
     size_t _width;
 
@@ -92,6 +102,10 @@ private:
     bool _constructed;
 
 
+    quint16 _defaultState;
+    FunctionOffset *_functionOffsetInstance;
+    FunctionStat *_functionStatInstance;
+    size_t _scriptSize;
     ScriptLine *_rule;
 
 
@@ -109,6 +123,10 @@ public:
      */
     static const size_t STATES_LIMIT;
 
+    static const size_t SCRIPT_LENGTH_LIMIT;
+
+    static const size_t GRID_SIZE_LIMIT;
+
 
     /**
      * @brief CellularAutomaton
@@ -122,7 +140,7 @@ public:
      * alolocated. New states can be added later. Grid is not allocated.
      * @param statesNumber number of states initially put to register
      */
-    CellularAutomaton(const quint16 statesNumber);
+    explicit CellularAutomaton(const quint16 statesNumber);
 
     /**
      * @brief CellularAutomaton
@@ -145,7 +163,7 @@ public:
      * returns number of states available in automaton
      * @return number of states in register
      */
-    size_t getStatesNumber();
+    size_t statesNumber();
 
     /**
      * @brief newState
@@ -154,8 +172,7 @@ public:
      * @param color color fon new state
      * @return number of new state
      */
-    quint16 newState(const QString name, const QColor color)
-    throw (Exceptions::StateLimitReachedException);
+    quint16 newState(const QString name, const QColor color);
 
     /**
      * @brief setStateColor
@@ -163,8 +180,7 @@ public:
      * @param state state to be modified
      * @param newColor new color for the state
      */
-    void setStateColor(quint16 state, QColor newColor)
-    throw (Exceptions::IndexOutOfBoundsException);
+    void setStateColor(quint16 state, QColor newColor);
 
     /**
      * @brief getStateColor
@@ -172,8 +188,7 @@ public:
      * @param state color of this state will be returned
      * @return color of state identified by number given in argument
      */
-    QColor getStateColor(quint16 state) const
-    throw (Exceptions::IndexOutOfBoundsException);
+    QColor stateColor(quint16 state) const;
 
     /**
      * @brief setStateColor
@@ -181,8 +196,7 @@ public:
      * @param state state to be modified
      * @param newColor new color for the state
      */
-    void setStateName(quint16 state, QString newName)
-    throw (Exceptions::IndexOutOfBoundsException);
+    void setStateName(quint16 state, QString newName);
 
     /**
      * @brief getStateName
@@ -190,20 +204,19 @@ public:
      * @param state name of this state will be returned
      * @return name of state identified by number given in argument
      */
-    QString getStateName(quint16 state) const
-    throw (Exceptions::IndexOutOfBoundsException);
+    QString stateName(quint16 state) const;
 
     /**
-     * @brief getGridWidth
+     * @brief gridWidth
      * @return number of columns in grid
      */
-    unsigned int getGridWidth() const;
+    unsigned int gridWidth() const;
 
     /**
-     * @brief getGridHeight
+     * @brief gridHeight
      * @return number of rows in grid
      */
-    unsigned int getGridHeight() const;
+    unsigned int gridHeight() const;
 
     /**
      * @brief resizeGrid
@@ -219,16 +232,23 @@ public:
       * @throws IllegalArgumentException when given state is bigger than <code>_maxValidState</code>
       * @throws IndexOutOfBoundsException when cell at given row and column is outside grid
       */
-    void setCellState(size_t x, size_t y, quint16 state)
-    throw (Exceptions::IllegalArgumentException, Exceptions::IndexOutOfBoundsException);
+    void setCellState(size_t x, size_t y, quint16 state);
 
     /**
-      * @brief Function getCellState
+      * @brief Function cellState
       * returns stete of cell at given coordinates in current generation.
       * @throws IndexOutOfBoundsException when cell at given row and column is outside grid
       */
-    quint16 getCellState(size_t x, size_t y) const
-    throw (Exceptions::IndexOutOfBoundsException);
+    quint16 cellState(size_t x, size_t y) const;
+
+    static CellularAutomaton *readFromFile(QString path);
+
+    void compileScript(std::istream &inputStream, size_t length);
+
+    QString name() const;
+    void setName(const QString &name);
+
+    void nextGeneration();
 
 signals:
     /**

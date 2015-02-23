@@ -27,7 +27,7 @@
 
 int main(int argc, char *argv[])
 {
-    qSetMessagePattern("[%{file}:%{line} %{function}] %{type}:  %{message}");
+    qSetMessagePattern("[%{file}:%{line}] %{type}:  %{message}  (@%{function})");
     qDebug() << "Starting CellularAutomatonCreator built" << __DATE__ << __TIME__;
 
     QApplication a(argc, argv);

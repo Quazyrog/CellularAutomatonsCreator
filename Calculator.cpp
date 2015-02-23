@@ -26,7 +26,7 @@ QString CalculatorFunction2D::name() const
 }
 
 
-double CalculatorFunction2D::valueOf(double arg) throw (Exceptions::ArithmeticErrorException)
+double CalculatorFunction2D::valueOf(double arg)
 {
     std::cerr << "Virtual function CalculatorFunction2D::valueOf shouldn't be called." << std::endl;
     return 2 * arg + 1;
@@ -41,12 +41,12 @@ bool CalculatorFunction2D::isVolatile() const
 
 QString CalculatorFunction3D::name() const
 {
-    qWarning ()<< "Virtual function CalculatorFunction3D::name shouldn't be called.";
+    qWarning () << "Virtual function CalculatorFunction3D::name shouldn't be called.";
     return QString("foo");
 }
 
 
-double CalculatorFunction3D::valueOf(double arg1, double arg2) throw (Exceptions::ArithmeticErrorException)
+double CalculatorFunction3D::valueOf(double arg1, double arg2)
 {
     qWarning() << "Virtual function CalculatorFunction3D::valueOf shouldn't be called.";
     return arg2 * arg1;
@@ -98,7 +98,7 @@ Calculator::~Calculator()
 }
 
 
-Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &syntaxResult) throw (Exceptions::IllegalArgumentException)
+Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &syntaxResult)
 {
     Node *result = nullptr;
 
@@ -134,7 +134,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
                 default:
                     syntaxResult.ok = false;
                     syntaxResult.where = expr + i;
-                    syntaxResult.what = Exceptions::MathSyntaxErrorException::UNEXPECTED_CHARACTER;
+                    syntaxResult.what = SyntaxError::UNEXPECTED_CHARACTER;
                     return nullptr;
             }
 
@@ -150,7 +150,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
         if (parentheses < 0) {
             syntaxResult.ok = false;
             syntaxResult.where = nullptr;
-            syntaxResult.what = Exceptions::MathSyntaxErrorException::UNCLOSED_PARENTHESES;
+            syntaxResult.what = SyntaxError::UNCLOSED_PARENTHESES;
             return nullptr;
         }
     }
@@ -158,7 +158,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
     if (parentheses != 0) {
         syntaxResult.ok = false;
         syntaxResult.where = nullptr;
-        syntaxResult.what = Exceptions::MathSyntaxErrorException::UNCLOSED_PARENTHESES;
+        syntaxResult.what = SyntaxError::UNCLOSED_PARENTHESES;
         return nullptr;
     }
     if (isalpha(expr[0]) && lowestPriority >= 2) {
@@ -224,7 +224,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
                 if (!isalpha(expr[i])) {
                     syntaxResult.ok = false;
                     syntaxResult.where = expr + i;
-                    syntaxResult.what = Exceptions::MathSyntaxErrorException::UNCLOSED_PARENTHESES;
+                    syntaxResult.what = SyntaxError::UNEXPECTED_CHARACTER;
                     return nullptr;
                 } else {
                     functionsName += expr[i];
@@ -234,7 +234,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
             if (i == length) {
                 syntaxResult.ok = false;
                 syntaxResult.where = expr + i;
-                syntaxResult.what = Exceptions::MathSyntaxErrorException::UNCLOSED_PARENTHESES;
+                syntaxResult.what = SyntaxError::UNCLOSED_PARENTHESES;
                 return nullptr;
             }
             ++i;
@@ -273,7 +273,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
                 if (semiclonPosition == length - 1) {
                     syntaxResult.ok = false;
                     syntaxResult.where = expr + semiclonPosition - 1;
-                    syntaxResult.what = Exceptions::MathSyntaxErrorException::INVALID_ARGUMENTS_NUMBER;
+                    syntaxResult.what = SyntaxError::INVALID_ARGUMENTS_NUMBER;
                     return nullptr;
                 }
 
@@ -283,7 +283,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
             } else {
                 syntaxResult.ok = false;
                 syntaxResult.where = expr + i;
-                syntaxResult.what = Exceptions::MathSyntaxErrorException::INVALID_ARGUMENTS_NUMBER;
+                syntaxResult.what = SyntaxError::INVALID_ARGUMENTS_NUMBER;
                 return nullptr;
             }
         }
@@ -293,7 +293,7 @@ Calculator::Node *Calculator::parse(const char *expr, int length, SyntaxInfo &sy
 }
 
 
-void Calculator::countNode(Node *node) throw (Exceptions::ArithmeticErrorException, Exceptions::NullPointerException, Exceptions::IllegalArgumentException)
+void Calculator::countNode(Node *node)
 {
     if (node->type == Calculator::NodeType::VALUE)
         return;
@@ -332,7 +332,7 @@ void Calculator::countNode(Node *node) throw (Exceptions::ArithmeticErrorExcepti
 }
 
 
-double Calculator::value() throw (Exceptions::ArithmeticErrorException, Exceptions::RuntimeException)
+double Calculator::value()
 {
     if (_expr == nullptr)
         return NAN;
@@ -400,7 +400,7 @@ double Calculator::value() throw (Exceptions::ArithmeticErrorException, Exceptio
 }
 
 
-void Calculator::optimize(Node *root) throw (Exceptions::RuntimeException)
+void Calculator::optimize(Node *root)
 {
     if (root->type == Calculator::NodeType::FUNCTION_2D) {
         Function2DNode *convertedRoot = dynamic_cast<Function2DNode*>(root);
@@ -448,19 +448,34 @@ void Calculator::optimize(Node *root) throw (Exceptions::RuntimeException)
 }
 
 
-void Calculator::parseExpression(QString str) throw (Exceptions::IllegalArgumentException)
+void Calculator::parseExpression(QString str)
 {
     if (_expr != nullptr) {
         delete _expr;
         _expr = nullptr;
     }
     SyntaxInfo si;
-    _expr = parse(str.toStdString().c_str(), str.length(), si);
+    si.ok = true;
+    std::string s = str.toStdString();
+    const char *expr = s.c_str();
+    _expr = parse(expr, str.length(), si);
+    if (!si.ok) {
+        switch (si.what) {
+        case SyntaxError::INVALID_ARGUMENTS_NUMBER:
+            throw Exceptions::SyntaxErrorException(0, QString().sprintf("Invalid number of arguments given to fuction (near %lith character)", si.where - expr));
+        case SyntaxError::UNCLOSED_PARENTHESES:
+            throw Exceptions::SyntaxErrorException(0, QString().sprintf("Unclosed parentheses (near %lith character)", si.where - expr));
+        case SyntaxError::UNEXPECTED_CHARACTER:
+            throw Exceptions::SyntaxErrorException(0, QString().sprintf("Unexpected character (near %lith character)", si.where - expr));
+        case SyntaxError::UNKNOWN_FUNCTION:
+            throw Exceptions::SyntaxErrorException(0, QString().sprintf("Unknown function (near %lith character)", si.where - expr));
+        }
+    }
     optimize(_expr);
 }
 
 
-void Calculator::bindFunction2D(CalculatorFunction2D *func, bool force) throw (Exceptions::RuntimeException)
+void Calculator::installFunction2D(CalculatorFunction2D *func, bool force)
 {
     if (_functions2D.find(func->name()) != _functions2D.end() && !force)
         throw Exceptions::RuntimeException();
@@ -468,7 +483,7 @@ void Calculator::bindFunction2D(CalculatorFunction2D *func, bool force) throw (E
 }
 
 
-void Calculator::bindFunction3D(CalculatorFunction3D *func, bool force) throw (Exceptions::RuntimeException)
+void Calculator::installFunction3D(CalculatorFunction3D *func, bool force)
 {
     if (_functions3D.find(func->name()) != _functions3D.end() && !force)
         throw Exceptions::RuntimeException();

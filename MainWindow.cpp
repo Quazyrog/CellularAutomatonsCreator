@@ -23,36 +23,51 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    _automaton = new Scripting::CellularAutomaton(4, 40, 30);
+    _automaton = nullptr;
 
     _gridViewer = new GridViewer(this);
-    _gridViewer->setDisplayedAutomaton(_automaton);
     setCentralWidget(_gridViewer);
 
-    _stateSwitch = new StateSwitchDock(_automaton, _gridViewer, this);
+    _stateSwitch = new StateSwitchDock(_gridViewer, this);
     addDockWidget(Qt::LeftDockWidgetArea, _stateSwitch);
 
     _statusBar = new QStatusBar(this);
     setStatusBar(_statusBar);
 
-    buildMenuBar();
+    createMenuBar();
 
     QSettings settings(".cacsettings", QSettings::NativeFormat);
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/windowState").toByteArray());
 
+    setWindowIcon(QIcon(":/ico/Icon.png"));
     setStatusTip("Done");
 }
 
 
-void MainWindow::buildMenuBar()
+void MainWindow::createMenuBar()
 {
-    _menuBar = new QMenuBar(this);
-    setMenuBar(_menuBar);
-
     _fileMenu = new QMenu("File", this);
-
-    _menuBar->addMenu(_fileMenu);
+    menuBar()->addMenu(_fileMenu);
+    _fileNewAction = new QAction(QIcon::fromTheme("document-new"), "New", this);
+    _fileNewAction->setShortcut(QKeySequence::New);
+    _fileMenu->addAction(_fileNewAction);
+    _fileOpenAction = new QAction(QIcon::fromTheme("document-open"), "Open", this);
+    _fileOpenAction->setShortcut(QKeySequence::Open);
+    _fileMenu->addAction(_fileOpenAction);
+    connect(_fileOpenAction, SIGNAL(triggered()), this, SLOT(openFile()));
+    _fileMenu->addSeparator();
+    _fileSaveAction = new QAction(QIcon::fromTheme("document-save"), "Save", this);
+    _fileSaveAction->setShortcut(QKeySequence::Save);
+    _fileMenu->addAction(_fileSaveAction);
+    _fileSaveAsAction = new QAction(QIcon::fromTheme("document-save-as"), "Save as", this);
+    _fileSaveAsAction->setShortcut(QKeySequence::SaveAs);
+    _fileMenu->addAction(_fileSaveAsAction);
+    _fileMenu->addSeparator();
+    _fileCloseAction = new QAction(QIcon::fromTheme("application-exit"), "Quit", this);
+    _fileCloseAction->setShortcut(QKeySequence::Quit);
+    _fileMenu->addAction(_fileCloseAction);
+    connect(_fileCloseAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 }
 
 
@@ -68,4 +83,48 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("MainWindow/windowState", saveState());
     QMainWindow::closeEvent(event);
+}
+
+
+void MainWindow::openFile()
+{
+    QFileDialog fileDialog;
+    fileDialog.setWindowTitle("Open file");
+    fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+    fileDialog.setFileMode(QFileDialog::ExistingFile);
+
+    QString selectedFile;
+    if (!fileDialog.exec())
+        return;
+    selectedFile = fileDialog.selectedFiles()[0];
+
+    try {
+        Scripting::CellularAutomaton *newAutomaton;
+        newAutomaton = Scripting::CellularAutomaton::readFromFile(selectedFile);
+        _gridViewer->setDisplayedAutomaton(newAutomaton);
+        _stateSwitch->setAutomaton(newAutomaton);
+        if (_automaton != nullptr)
+            delete _automaton;
+        _automaton = newAutomaton;
+    } catch (Exceptions::SyntaxErrorException &except) {
+        qWarning() << "Opening file failed:" << except.what() << "–" << except.message() << "at" << except.where();
+        QMessageBox msgbox;
+        msgbox.setIcon(QMessageBox::Critical);
+        msgbox.setWindowTitle("Failed to open file");
+        msgbox.setText("Failed to open file <i>" + selectedFile + "</i>. Automaton said, that line " + QString::number(except.where()) + " is invalid – <i>" + except.message() + QString("</i>."));
+        msgbox.exec();
+        setStatusTip("Failed to open file " + selectedFile);
+        return;
+    } catch (Exceptions::IOException &except) {
+        qWarning() << "Opening file failed:" << except.what();
+        QMessageBox msgbox;
+        msgbox.setIcon(QMessageBox::Critical);
+        msgbox.setWindowTitle("Failed to open file");
+        msgbox.setText("Failed to open file – illegal argument exception.");
+        msgbox.exec();
+        setStatusTip("Failed to open file " + selectedFile);
+        return;
+    }
+
+    setStatusTip("Opened file " + selectedFile);
 }

@@ -54,27 +54,28 @@ const char *StateLimitReachedException::what()  const noexcept
 }
 
 
-MathSyntaxErrorException::MathSyntaxErrorException(Error what, int where)
+SyntaxErrorException::SyntaxErrorException(int where, QString message)
 {
-    _error = what;
+    _message = message;
     _where = where;
 }
 
 
-const char *MathSyntaxErrorException::what() const noexcept
+const char *SyntaxErrorException::what() const noexcept
 {
-    QString description;
-    switch (_error) {
-    case UNCLOSED_PARENTHESES:
-        return "MathSyntaxErrorException – unclosed parentheses";
-    case UNEXPECTED_CHARACTER:
-        return "MathSyntaxErrorException – unexpected character";
-    case UNKNOWN_FUNCTION:
-        return "MathSyntaxErrorException – unknown function";
-    case INVALID_ARGUMENTS_NUMBER:
-        return "MathSyntaxErrorException – invalid arguments number";
-    }
     return "MathSyntaxErrorException";
+}
+
+
+int SyntaxErrorException::where() const
+{
+    return _where;
+}
+
+
+QString SyntaxErrorException::message() const
+{
+    return _message;
 }
 
 

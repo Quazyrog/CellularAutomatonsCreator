@@ -52,10 +52,10 @@ public:
     inline int getLeftMargin() const;
     inline int getTopMargin() const;
 
-    void setDisplayedAutomaton(Scripting::CellularAutomaton *automaton) throw (Exceptions::NullPointerException);
+    void setDisplayedAutomaton(Scripting::CellularAutomaton *automaton);
 
     quint16 getStateBrush() const;
-    void setStateBrush(quint16 brush) throw (Exceptions::IllegalArgumentException);
+    void setStateBrush(quint16 brush);
 
 };
 

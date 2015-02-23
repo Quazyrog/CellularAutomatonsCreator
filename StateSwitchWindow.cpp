@@ -21,10 +21,10 @@
 #include "GridViewer.hpp"
 
 
-StateInfoWidget::StateInfoWidget(Scripting::CellularAutomaton *automaton, QWidget *parent):
+StateInfoWidget::StateInfoWidget(QWidget *parent):
     QWidget(parent)
 {
-    _automaton = automaton;
+    _automaton = nullptr;
 
     _numberDisplay = new QLabel(this);
     _numberLabel = new QLabel( "State number (quint16):", this);
@@ -46,34 +46,50 @@ StateInfoWidget::StateInfoWidget(Scripting::CellularAutomaton *automaton, QWidge
 
 void StateInfoWidget::updateDisplays(quint16 state)
 {
+    if (_automaton == nullptr)
+        return;
+
     _numberDisplay->setText(QString::number(state));
-    _nameDisplay->setText(_automaton->getStateName(state));
-    const QColor color = _automaton->getStateColor(state);
+    _nameDisplay->setText(_automaton->stateName(state));
+    const QColor color = _automaton->stateColor(state);
     _colorDisplay->setText(QString().sprintf("(%hu; %hu; %hu)", color.red(), color.green(), color.blue()));
 }
 
 
-StatesTableModel::StatesTableModel(Scripting::CellularAutomaton *automaton, QObject *parent):
-    QAbstractListModel(parent)
+void StateInfoWidget::setAutomaton(Scripting::CellularAutomaton *automaton)
 {
     _automaton = automaton;
+    updateDisplays(0);
+}
+
+
+StatesTableModel::StatesTableModel(QObject *parent):
+    QAbstractListModel(parent)
+{
+    _automaton = nullptr;
 }
 
 
 int StatesTableModel::rowCount(const QModelIndex &) const
 {
-    return _automaton->getStatesNumber();
+    if (_automaton == nullptr)
+        return 0;
+    return _automaton->statesNumber();
 }
 
 
 QVariant StatesTableModel::data(const QModelIndex &index, int role) const
 {
+    if (_automaton == nullptr)
+        return QVariant();
+
     switch (role) {
     case Qt::DisplayRole:
-        return QString().sprintf("%i   ", index.row()) + _automaton->getStateName(index.row());
+        return QString().sprintf("%i   ", index.row()) + _automaton->stateName(index.row());
     case Qt::BackgroundColorRole:
-        return _automaton->getStateColor(index.row());
+        return _automaton->stateColor(index.row());
     }
+
     return QVariant();
 }
 
@@ -81,20 +97,30 @@ QVariant StatesTableModel::data(const QModelIndex &index, int role) const
 
 void StatesTableModel::statesModified(quint16 state)
 {
-    QModelIndex index = createIndex(state, 1);
+    QModelIndex index = createIndex(state, 0);
     emit(dataChanged(index, index));
 }
 
 
-StateSwitchWidget::StateSwitchWidget(Scripting::CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent) :
+void StatesTableModel::setAutomaton(Scripting::CellularAutomaton *automaton)
+{
+    _automaton = automaton;
+    if (_automaton == nullptr)
+        return;
+    emit(dataChanged(createIndex(0, 0), createIndex(_automaton->statesNumber(), 0)));
+}
+
+
+StateSwitchWidget::StateSwitchWidget(GridViewer *viewer, QWidget *parent) :
     QWidget(parent)
 {
-    _statesModel = new StatesTableModel(automaton, this);
     _viewer = viewer;
+
+    _statesModel = new StatesTableModel(this);
 
     _layout = new QVBoxLayout(this);
 
-    _infoWidget = new StateInfoWidget(automaton, this);
+    _infoWidget = new StateInfoWidget(this);
     _layout->addWidget(_infoWidget);
 
     _palette = new QListView(this);
@@ -113,12 +139,26 @@ void StateSwitchWidget::selectedBrushChange(const QItemSelection &, const QItemS
 }
 
 
-StateSwitchDock::StateSwitchDock(Scripting::CellularAutomaton *automaton, GridViewer *viewer, QWidget *parent):
+void StateSwitchWidget::setAutomaton(Scripting::CellularAutomaton *automaton)
+{
+    _infoWidget->setAutomaton(automaton);
+    _statesModel->setAutomaton(automaton);
+}
+
+
+StateSwitchDock::StateSwitchDock(GridViewer *viewer, QWidget *parent):
     QDockWidget(parent)
 {
-    _widget = new StateSwitchWidget(automaton, viewer, this);
+    _widget = new StateSwitchWidget(viewer, this);
     setWidget(_widget);
     setMinimumSize(150, 300);
     setWindowTitle("States palette");
     setObjectName("StateSwitchDock");
+}
+
+
+void StateSwitchDock::setAutomaton(Scripting::CellularAutomaton *automaton)
+{
+    qDebug() << "Changind switch's automaton to" << static_cast<void*>(automaton);
+    _widget->setAutomaton(automaton);
 }
