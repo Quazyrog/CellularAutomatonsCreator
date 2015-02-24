@@ -34,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent) :
     _statusBar = new QStatusBar(this);
     setStatusBar(_statusBar);
 
+    _simulationTimer = new QTimer(this);
+    _simulationTimer->setInterval(1000);
+    connect(_simulationTimer, SIGNAL(timeout()), this, SLOT(nextGenerationHandler()));
+    connect(_simulationTimer, SIGNAL(timeout()), _gridViewer, SLOT(update()));
     createMenuBar();
 
     QSettings settings(".cacsettings", QSettings::NativeFormat);
@@ -41,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreState(settings.value("MainWindow/windowState").toByteArray());
 
     setWindowIcon(QIcon(":/ico/Icon.png"));
-    setStatusTip("Done");
+    statusBar()->showMessage("Done");
 }
 
 
@@ -60,14 +64,25 @@ void MainWindow::createMenuBar()
     _fileSaveAction = new QAction(QIcon::fromTheme("document-save"), "Save", this);
     _fileSaveAction->setShortcut(QKeySequence::Save);
     _fileMenu->addAction(_fileSaveAction);
+    connect(_fileSaveAction, SIGNAL(triggered()), this, SLOT(saveFile()));
     _fileSaveAsAction = new QAction(QIcon::fromTheme("document-save-as"), "Save as", this);
     _fileSaveAsAction->setShortcut(QKeySequence::SaveAs);
     _fileMenu->addAction(_fileSaveAsAction);
     _fileMenu->addSeparator();
+    connect(_fileSaveAsAction, SIGNAL(triggered()), this, SLOT(saveFileAs()));
     _fileCloseAction = new QAction(QIcon::fromTheme("application-exit"), "Quit", this);
     _fileCloseAction->setShortcut(QKeySequence::Quit);
     _fileMenu->addAction(_fileCloseAction);
     connect(_fileCloseAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+    _simulationMenu = new QMenu("Simulation", this);
+    menuBar()->addMenu(_simulationMenu);
+    _simulationStopAction = new QAction(QIcon::fromTheme("media-playback-stop"), "Stop simulation", this);
+    _simulationMenu->addAction(_simulationStopAction);
+    connect(_simulationStopAction, SIGNAL(triggered()), _simulationTimer, SLOT(stop()));
+    _simulationResumeAction = new QAction(QIcon::fromTheme("media-playback-start"), "Start simulation", this);
+    _simulationMenu->addAction(_simulationResumeAction);
+    connect(_simulationResumeAction, SIGNAL(triggered()), _simulationTimer, SLOT(start()));
 }
 
 
@@ -99,13 +114,7 @@ void MainWindow::openFile()
     selectedFile = fileDialog.selectedFiles()[0];
 
     try {
-        Scripting::CellularAutomaton *newAutomaton;
-        newAutomaton = Scripting::CellularAutomaton::readFromFile(selectedFile);
-        _gridViewer->setDisplayedAutomaton(newAutomaton);
-        _stateSwitch->setAutomaton(newAutomaton);
-        if (_automaton != nullptr)
-            delete _automaton;
-        _automaton = newAutomaton;
+        setAutomaton(Scripting::CellularAutomaton::readFromFile(selectedFile));
     } catch (Exceptions::SyntaxErrorException &except) {
         qWarning() << "Opening file failed:" << except.what() << "–" << except.message() << "at" << except.where();
         QMessageBox msgbox;
@@ -120,11 +129,96 @@ void MainWindow::openFile()
         QMessageBox msgbox;
         msgbox.setIcon(QMessageBox::Critical);
         msgbox.setWindowTitle("Failed to open file");
-        msgbox.setText("Failed to open file – illegal argument exception.");
+        msgbox.setText("Failed to open file – io error.");
         msgbox.exec();
         setStatusTip("Failed to open file " + selectedFile);
         return;
     }
 
-    setStatusTip("Opened file " + selectedFile);
+    _documentPath = selectedFile;
+    statusBar()->showMessage("Opened file " + selectedFile);
+}
+
+
+void MainWindow::saveFile()
+{
+    if (_documentPath == QString("")) {
+        saveFileAs();
+        return;
+    }
+
+    try {
+        _automaton->saveToFile(_documentPath);
+    } catch (Exceptions::IOException &except) {
+        qWarning() << "Saving file failed:" << except.what();
+        QMessageBox msgbox;
+        msgbox.setIcon(QMessageBox::Critical);
+        msgbox.setWindowTitle("Failed to save file");
+        msgbox.setText("Failed to save file – io error.");
+        msgbox.exec();
+        setStatusTip("Failed to open file " + _documentPath);
+    }
+
+    qDebug() << "Saved " << _documentPath;
+    statusBar()->showMessage("Saved file " + _documentPath);
+}
+
+
+void MainWindow::saveFileAs()
+{
+    QFileDialog fileDialog;
+    fileDialog.setWindowTitle("Save file");
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setFileMode(QFileDialog::AnyFile);
+    if (_documentPath != QString(""))
+        fileDialog.setDirectory(QFileInfo(_documentPath).dir());
+
+    QString selectedFile;
+    if (!fileDialog.exec())
+        return;
+    selectedFile = fileDialog.selectedFiles()[0];
+
+    try {
+        _automaton->saveToFile(selectedFile);
+    } catch (Exceptions::IOException &except) {
+        qWarning() << "Saving file failed:" << except.what();
+        QMessageBox msgbox;
+        msgbox.setIcon(QMessageBox::Critical);
+        msgbox.setWindowTitle("Failed to save file");
+        msgbox.setText("Failed to save file – io error.");
+        msgbox.exec();
+        setStatusTip("Failed to open file " + selectedFile);
+        return;
+    }
+
+    _documentPath = selectedFile;
+
+    qDebug() << "Saved " << _documentPath;
+    statusBar()->showMessage("Saved file " + selectedFile);
+}
+
+
+void MainWindow::setAutomaton(Scripting::CellularAutomaton *automaton)
+{
+    if (automaton == nullptr) {
+        qWarning() << "Attempt to set _automaton to _nullptr!";
+        return;
+    }
+
+    _generationCounter = 0;
+    _gridViewer->setDisplayedAutomaton(automaton);
+    _stateSwitch->setAutomaton(automaton);
+    if (_automaton != nullptr) {
+        _automaton->disconnect(_simulationTimer, SIGNAL(timeout()));
+        delete _automaton;
+    }
+    _automaton = automaton;
+    connect(_simulationTimer, SIGNAL(timeout()), _automaton, SLOT(nextGeneration()));
+}
+
+
+void MainWindow::nextGenerationHandler()
+{
+    ++_generationCounter;
+    statusBar()->showMessage(QString().sprintf("Generation: %u", _generationCounter));
 }

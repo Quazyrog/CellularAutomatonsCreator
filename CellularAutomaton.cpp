@@ -36,8 +36,9 @@ CellularAutomaton::CellularAutomaton()
 
     _height = 0;
     _width = 0;
-    _currentGeneration = nullptr;
-    _oldGeneration = nullptr;
+    _defaultState = 0;
+    _firstLine = 0;
+    _grid = nullptr;
 
     _rule = nullptr;
     _functionOffsetInstance = new FunctionOffset(this);
@@ -89,15 +90,10 @@ void CellularAutomaton::setName(const QString &name)
 }
 void CellularAutomaton::deleteGrid()
 {
-    if (_oldGeneration != nullptr) {
+    if (_grid != nullptr) {
         for (size_t i = 0; i < _width; ++i)
-            delete [] _oldGeneration[i];
-        delete [] _oldGeneration;
-    }
-    if (_currentGeneration != nullptr) {
-        for (size_t i = 0; i < _width; ++i)
-            delete [] _currentGeneration[i];
-        delete [] _currentGeneration;
+            delete [] _grid[i];
+        delete [] _grid;
     }
 }
 
@@ -193,13 +189,10 @@ void CellularAutomaton::resizeGrid(size_t width, size_t height)
 
     deleteGrid();
 
-    _currentGeneration = new quint16* [width];
-    _oldGeneration = new quint16* [width];
+    _grid = new quint16* [width];
     for (size_t i = 0; i < width; ++i) {
-        _currentGeneration[i] = new quint16 [height];
-        memset(_currentGeneration[i], 0, height * sizeof(quint16));
-        _oldGeneration[i] = new quint16 [height];
-        memset(_currentGeneration[i], 0, height * sizeof(quint16));
+        _grid[i] = new quint16 [height];
+        memset(_grid[i], 0, height * sizeof(quint16));
     }
 
     _width = width;
@@ -214,7 +207,7 @@ void CellularAutomaton::setCellState(size_t x, size_t y, quint16 state)
     if (y >= _height || x >= _width)
         throw Exceptions::IndexOutOfBoundsException();
 
-    _currentGeneration[x][y] = state;
+    _grid[x][y] = state;
 }
 
 
@@ -223,7 +216,7 @@ quint16 CellularAutomaton::cellState(size_t x, size_t y) const
     if (y >= _height || x >= _width)
         throw Exceptions::IndexOutOfBoundsException();
 
-    return _currentGeneration[x][y];
+    return _grid[x][y];
 }
 
 
@@ -255,10 +248,10 @@ CellularAutomaton *CellularAutomaton::readFromFile(QString path)
         result->newState(QString::fromStdString(name), QColor(r, g, b));
     }
 
-    size_t scriptLength;
-    inputStream >> scriptLength;
+    size_t scriptLength, firstLineNumber, defaultState;
+    inputStream >> scriptLength >> firstLineNumber >> defaultState;
     qDebug() << "Reading script of size" << scriptLength;
-    result->compileScript(inputStream, scriptLength);
+    result->compileScript(inputStream, scriptLength, firstLineNumber, defaultState);
 
 
     unsigned int width, height;
@@ -285,10 +278,16 @@ CellularAutomaton *CellularAutomaton::readFromFile(QString path)
     return result;
 }
 
-void CellularAutomaton::compileScript(std::istream &inputStream, size_t length)
+void CellularAutomaton::compileScript(std::istream &inputStream, size_t length, size_t firstLine, quint16 defaultState)
 {
     if (length > SCRIPT_LENGTH_LIMIT)
         throw Exceptions::SyntaxErrorException(-1, "Script too long");
+    if (firstLine >= length)
+        throw Exceptions::SyntaxErrorException(-1, "Invalid first line number");
+    if (defaultState >= _stateRegister.size())
+        throw Exceptions::SyntaxErrorException(-1, "Invalid default state");
+    _firstLine = firstLine;
+    _defaultState = defaultState;
 
     ScriptLine *compilationBuffer = new ScriptLine [length];
     bool *definedLines = new bool [length];
@@ -395,4 +394,147 @@ void CellularAutomaton::compileScript(std::istream &inputStream, size_t length)
     _scriptSize = length;
 }
 
+
+void CellularAutomaton::saveToFile(QString path)
+{
+    using std::endl;
+
+    qDebug() << "Saving automaton" << _name << "as" << path;
+    std::ofstream outStream(path.toStdString());
+    if (!outStream.is_open() || !outStream.good())
+        throw Exceptions::IOException();
+    outStream << _name.toStdString() << endl;
+
+    outStream << _stateRegister.size() << endl;
+    for (StateRegisterEntry state : _stateRegister)
+        outStream << state.name.toStdString() << " " << state.color.red() << " " << state.color.green() << " " << state.color.blue() << std::endl;
+
+    outStream << _scriptSize << " " << _firstLine << " " << _defaultState << endl;
+    for (unsigned int i = 0; i < _scriptSize; ++i) {
+        ScriptLine &line = _rule[i];
+        if (line.instruction == Instruction::RETURN_STATE) {
+            outStream << i << " STATE " << line.data1 << endl;
+        } else {
+            outStream << i << " IF " << line.leftExpression->toString().toStdString();
+            switch (line.instruction) {
+            case Instruction::COMPARATOR_EQUAL:
+                outStream << " = ";
+                break;
+            case Instruction::COMPARATOR_DIFFERENT:
+                outStream << " <> ";
+                break;
+            case Instruction::COMPARATOR_LESS:
+                outStream << " < ";
+                break;
+            case Instruction::COMPARATOR_LESS_EQUAL:
+                outStream << " <= ";
+                break;
+            case Instruction::COMPARATOR_GREATER:
+                outStream << " > ";
+                break;
+            case Instruction::COMPARATOR_GREATEER_EQUAL:
+                outStream << " >= ";
+                break;
+            default:
+                qWarning() << "Unexpected switch value!";
+                break;
+            }
+            outStream << line.rightExpression->toString().toStdString() << " THEN " << line.data1 << " ELSE " << line.data2 << endl;
+        }
+    }
+
+    outStream << _width << " " << _height << endl;
+    for (unsigned int y = 0; y < _height; ++y) {
+        for (unsigned int x = 0; x < _width; ++x)
+            outStream << _grid[x][y] << " ";
+        outStream << endl;
+    }
+
+    outStream.close();
 }
+
+
+void CellularAutomaton::nextGeneration()
+{
+    static quint16 **newGrid = nullptr;
+    static size_t tmpWidth = 0, tmpHeight = 0;
+    constexpr unsigned int depthLimit = 64;
+
+    if (tmpWidth != _width || tmpHeight != _height) {
+        if (newGrid != nullptr) {
+            for (unsigned int i = 0; i < tmpWidth; ++i)
+                delete [] newGrid[i];
+            delete [] newGrid;
+        }
+
+        newGrid = new quint16* [_width];
+        for (unsigned int i = 0; i < _width; ++i)
+            newGrid[i] = new quint16 [_height];
+        tmpWidth = _width;
+        tmpHeight = _height;
+    }
+
+    for (unsigned int y = 0; y < _height; ++y) {
+        for (unsigned int x = 0; x < _width; ++x) {
+            _functionOffsetInstance->setXY(x, y);
+            _functionStatInstance->setXY(x, y);
+
+            quint16 state = _defaultState;
+            ScriptLine *line = _rule + _firstLine;
+            for (unsigned int depth = 1; depth <= depthLimit; ++depth) {
+                if (line->instruction == Instruction::RETURN_STATE) {
+                    state = line->data1;
+                    break;
+                }
+
+                double leftValue;
+                double rightValue;
+
+                bool comparisionResult;
+                try {
+                    leftValue = line->leftExpression->value();
+                    rightValue = line->rightExpression->value();
+
+                    switch (line->instruction) {
+                    case Instruction::COMPARATOR_EQUAL:
+                        comparisionResult = (leftValue == rightValue);
+                        break;
+                    case Instruction::COMPARATOR_DIFFERENT:
+                        comparisionResult = (leftValue != rightValue);
+                        break;
+                    case Instruction::COMPARATOR_LESS:
+                        comparisionResult = (leftValue < rightValue);
+                        break;
+                    case Instruction::COMPARATOR_LESS_EQUAL:
+                        comparisionResult = (leftValue <= rightValue);
+                        break;
+                    case Instruction::COMPARATOR_GREATER:
+                        comparisionResult = (leftValue > rightValue);
+                        break;
+                    case Instruction::COMPARATOR_GREATEER_EQUAL:
+                        comparisionResult = (leftValue >= rightValue);
+                        break;
+                    default:
+                        qWarning() << "Unexpected switch value!";
+                        break;
+                    }
+                } catch (Exceptions::IndexOutOfBoundsException &except) {
+                    comparisionResult = false;
+                }
+
+                if (comparisionResult)
+                    line = _rule + line->data1;
+                else
+                    line = _rule + line->data2;
+            }
+            newGrid[x][y] = state;
+        }
+    }
+
+    quint16 **tmp = _grid;
+    _grid = newGrid;
+    newGrid = tmp;
+}
+
+
+} //Namespace Scripting

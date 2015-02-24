@@ -42,7 +42,7 @@ FunctionStat::~FunctionStat()
 
 void FunctionStat::setXY(unsigned int x, unsigned int y)
 {
-    _cacheExpired = false;
+    _cacheExpired = true;
     _x = x;
     _y = y;
 }
@@ -52,7 +52,8 @@ void FunctionStat::updateCache()
 {
     if (_cacheSize != _automaton->statesNumber()) {
         delete [] _cache;
-        _cache = new unsigned char [_automaton->statesNumber()];
+        _cacheSize = _automaton->statesNumber();
+        _cache = new unsigned char [_cacheSize];
     }
 
     int width = _automaton->gridWidth();
@@ -60,6 +61,8 @@ void FunctionStat::updateCache()
     memset(_cache, 0, sizeof(unsigned char) * _cacheSize);
     for (int xv = -1; xv <= 1; xv++) {
         for (int yv = -1; yv <= 1; yv++) {
+            if (xv == 0 && yv == 0)
+                continue;
             int x = _x + xv;
             int y = _y + yv;
             if (x < 0 || y < 0 || x >= static_cast<int>(width) || y >= static_cast<int>(height))

@@ -46,12 +46,23 @@ private:
     QAction *_fileNewAction;
     QAction *_fileOpenAction;
     QAction *_fileSaveAction;
+    QString _documentPath;
     QAction *_fileSaveAsAction;
     QAction *_fileCloseAction;
+
+    QMenu *_simulationMenu;
+    QAction *_simulationStopAction;
+    QAction *_simulationResumeAction;
+
+    QTimer *_simulationTimer;
 
     GridViewer *_gridViewer;
     Scripting::CellularAutomaton *_automaton;
     StateSwitchDock *_stateSwitch;
+
+    unsigned int _generationCounter;
+
+    void setAutomaton(Scripting::CellularAutomaton *automaton);
 
     void closeEvent(QCloseEvent *event) override;
 
@@ -62,6 +73,9 @@ public:
 
 public slots:
     void openFile();
+    void saveFile();
+    void saveFileAs();
+    void nextGenerationHandler();
 };
 
 #endif // MAINWINDOW_HPP

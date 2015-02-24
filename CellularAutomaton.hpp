@@ -89,11 +89,8 @@ private:
     /** @brief Automaton's grid height. */
     size_t _height;
 
-    /** @brief This array stores informations about previous states of all cells in automaton. */
-    quint16 **_oldGeneration;
-
     /** @brief This array stores informations about current states of all cells in automaton. */
-    quint16 **_currentGeneration;
+    quint16 **_grid;
 
     /** @brief Stores informations about available cell's states. */
     QVector<StateRegisterEntry> _stateRegister;
@@ -106,6 +103,7 @@ private:
     FunctionOffset *_functionOffsetInstance;
     FunctionStat *_functionStatInstance;
     size_t _scriptSize;
+    size_t _firstLine;
     ScriptLine *_rule;
 
 
@@ -127,6 +125,7 @@ public:
 
     static const size_t GRID_SIZE_LIMIT;
 
+    static CellularAutomaton *readFromFile(QString path);
 
     /**
      * @brief CellularAutomaton
@@ -241,14 +240,13 @@ public:
       */
     quint16 cellState(size_t x, size_t y) const;
 
-    static CellularAutomaton *readFromFile(QString path);
 
-    void compileScript(std::istream &inputStream, size_t length);
+    void compileScript(std::istream &inputStream, size_t length, size_t firstLine, quint16 defaultState);
 
     QString name() const;
     void setName(const QString &name);
 
-    void nextGeneration();
+    void saveToFile(QString path);
 
 signals:
     /**
@@ -256,6 +254,10 @@ signals:
      * This signal is emited when <code>_stateRegister</code> changes. Constructor will not emit this signal.
      */
     void registerChanged(quint16 state);
+
+
+public slots:
+    void nextGeneration();
 };
 
 }

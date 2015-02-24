@@ -184,6 +184,7 @@ class Calculator
         const char *where;
     };
 
+    QString _source;
     Node *_expr;
     std::map<QString, CalculatorFunction2D*> _functions2D;
     std::map<QString, CalculatorFunction3D*> _functions3D;
@@ -191,6 +192,7 @@ class Calculator
     Node *parse(const char *expr, int length, SyntaxInfo &syntaxResult);
     void countNode(Node *node);
     void optimize(Node *root);
+
 public:
     Calculator();
 
@@ -203,6 +205,8 @@ public:
     void installFunction2D(CalculatorFunction2D *func, bool force = false);
 
     void installFunction3D(CalculatorFunction3D *func, bool force = false);
+
+    QString toString() const;
 };
 
 

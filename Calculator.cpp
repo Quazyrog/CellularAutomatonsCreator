@@ -327,7 +327,7 @@ void Calculator::countNode(Node *node)
         node->value = static_cast<int>(node->left->value) % static_cast<int>(node->right->value);
         break;
     default:
-        throw Exceptions::IllegalArgumentException();
+        qWarning() << "Unexpected switch value!";
     }
 }
 
@@ -472,6 +472,8 @@ void Calculator::parseExpression(QString str)
         }
     }
     optimize(_expr);
+
+    _source = str;
 }
 
 
@@ -490,4 +492,10 @@ void Calculator::installFunction3D(CalculatorFunction3D *func, bool force)
     _functions3D[func->name()] = func;
 }
 
+QString Calculator::toString() const
+{
+    return _source;
 }
+
+} //Namespace Scripting
+
