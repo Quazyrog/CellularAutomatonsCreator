@@ -349,7 +349,7 @@ double Calculator::value()
         }
     };
 
-    static std::stack<StackEntry> expressionsStack;
+    std::stack<StackEntry> expressionsStack;
 
     expressionsStack.push(StackEntry(_expr));
     do {
