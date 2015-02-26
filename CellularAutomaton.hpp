@@ -248,6 +248,8 @@ public:
 
     void saveToFile(QString path);
 
+    void fillGrid(quint16 state = 0);
+
 signals:
     /**
      * @brief Signal registerChanged

@@ -26,6 +26,7 @@
 #include <QIcon>
 #include <QKeySequence>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 
 class GridViewer;
@@ -41,7 +42,7 @@ class MainWindow : public QMainWindow
 private:
     QStatusBar *_statusBar;
 
-    void createMenuBar();
+    void createFileMenu();
     QMenu *_fileMenu;
     QAction *_fileNewAction;
     QAction *_fileOpenAction;
@@ -50,9 +51,21 @@ private:
     QAction *_fileSaveAsAction;
     QAction *_fileCloseAction;
 
+    void createSimulationMenu();
     QMenu *_simulationMenu;
     QAction *_simulationStopAction;
     QAction *_simulationResumeAction;
+    QMenu *_simulationSpeedSubmenu;
+    QAction *_simulationSpeed1000;
+    QAction *_simulationSpeed500;
+    QAction *_simulationSpeed333;
+    QAction *_simulationSpeed250;
+
+    void createGridPaintingMenu();
+    QMenu *_gridPaintingMenu;
+    QAction *_fillGrid;
+    QAction *_fillGridWithZeros;
+    QAction *_resizeGridAction;
 
     QTimer *_simulationTimer;
 
@@ -76,6 +89,7 @@ public slots:
     void saveFile();
     void saveFileAs();
     void nextGenerationHandler();
+    void showResizeDialog();
 };
 
 #endif // MAINWINDOW_HPP

@@ -35,10 +35,13 @@ MainWindow::MainWindow(QWidget *parent) :
     setStatusBar(_statusBar);
 
     _simulationTimer = new QTimer(this);
-    _simulationTimer->setInterval(1000);
+    _simulationTimer->setInterval(500);
     connect(_simulationTimer, SIGNAL(timeout()), this, SLOT(nextGenerationHandler()));
     connect(_simulationTimer, SIGNAL(timeout()), _gridViewer, SLOT(update()));
-    createMenuBar();
+
+    createFileMenu();
+    createSimulationMenu();
+    createGridPaintingMenu();
 
     QSettings settings(".cacsettings", QSettings::NativeFormat);
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
@@ -49,40 +52,90 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 
-void MainWindow::createMenuBar()
+void MainWindow::createFileMenu()
 {
     _fileMenu = new QMenu("File", this);
     menuBar()->addMenu(_fileMenu);
+
     _fileNewAction = new QAction(QIcon::fromTheme("document-new"), "New", this);
     _fileNewAction->setShortcut(QKeySequence::New);
     _fileMenu->addAction(_fileNewAction);
+
     _fileOpenAction = new QAction(QIcon::fromTheme("document-open"), "Open", this);
     _fileOpenAction->setShortcut(QKeySequence::Open);
     _fileMenu->addAction(_fileOpenAction);
     connect(_fileOpenAction, SIGNAL(triggered()), this, SLOT(openFile()));
+
     _fileMenu->addSeparator();
     _fileSaveAction = new QAction(QIcon::fromTheme("document-save"), "Save", this);
     _fileSaveAction->setShortcut(QKeySequence::Save);
     _fileMenu->addAction(_fileSaveAction);
     connect(_fileSaveAction, SIGNAL(triggered()), this, SLOT(saveFile()));
+
     _fileSaveAsAction = new QAction(QIcon::fromTheme("document-save-as"), "Save as", this);
     _fileSaveAsAction->setShortcut(QKeySequence::SaveAs);
     _fileMenu->addAction(_fileSaveAsAction);
     _fileMenu->addSeparator();
     connect(_fileSaveAsAction, SIGNAL(triggered()), this, SLOT(saveFileAs()));
+
     _fileCloseAction = new QAction(QIcon::fromTheme("application-exit"), "Quit", this);
     _fileCloseAction->setShortcut(QKeySequence::Quit);
     _fileMenu->addAction(_fileCloseAction);
     connect(_fileCloseAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+}
 
+
+void MainWindow::createSimulationMenu() {
     _simulationMenu = new QMenu("Simulation", this);
     menuBar()->addMenu(_simulationMenu);
     _simulationStopAction = new QAction(QIcon::fromTheme("media-playback-stop"), "Stop simulation", this);
     _simulationMenu->addAction(_simulationStopAction);
     connect(_simulationStopAction, SIGNAL(triggered()), _simulationTimer, SLOT(stop()));
+
     _simulationResumeAction = new QAction(QIcon::fromTheme("media-playback-start"), "Start simulation", this);
     _simulationMenu->addAction(_simulationResumeAction);
     connect(_simulationResumeAction, SIGNAL(triggered()), _simulationTimer, SLOT(start()));
+
+
+    _simulationMenu->addSeparator();
+    _simulationSpeedSubmenu = new QMenu("Simulation speed", this);
+    _simulationMenu->addMenu(_simulationSpeedSubmenu);
+
+    _simulationSpeed1000 = new QAction("Slow (1000ms delay)", this);
+    _simulationSpeedSubmenu->addAction(_simulationSpeed1000);
+    connect(_simulationSpeed1000, &QAction::triggered, [this](){ _simulationTimer->setInterval(1000); });
+
+    _simulationSpeed500 = new QAction("Normal (500ms delay)", this);
+    _simulationSpeedSubmenu->addAction(_simulationSpeed500);
+    connect(_simulationSpeed500, &QAction::triggered, [this](){ _simulationTimer->setInterval(500); });
+
+    _simulationSpeed333 = new QAction("Fast (333ms delay)", this);
+    _simulationSpeedSubmenu->addAction(_simulationSpeed333);
+    connect(_simulationSpeed333, &QAction::triggered, [this](){ _simulationTimer->setInterval(333); });
+
+    _simulationSpeed250 = new QAction("Very fast (250ms delay)", this);
+    _simulationSpeedSubmenu->addAction(_simulationSpeed250);
+    connect(_simulationSpeed250, &QAction::triggered, [this](){ _simulationTimer->setInterval(250); });
+}
+
+
+void MainWindow::createGridPaintingMenu()
+{
+    _gridPaintingMenu = new QMenu("Grid painting", this);
+    menuBar()->addMenu(_gridPaintingMenu);
+
+    _fillGridWithZeros = new QAction("Fill grid with zeros", this);
+    _gridPaintingMenu->addAction(_fillGridWithZeros);
+    connect(_fillGridWithZeros, &QAction::triggered, [this](){
+        if (_automaton != nullptr)
+                _automaton->fillGrid();
+        _gridViewer->update();
+    });
+
+    _gridPaintingMenu->addSeparator();
+    _resizeGridAction = new QAction("Resize grid", this);
+    _gridPaintingMenu->addAction(_resizeGridAction);
+    connect(_resizeGridAction, SIGNAL(triggered()), this, SLOT(showResizeDialog()));
 }
 
 
@@ -205,6 +258,7 @@ void MainWindow::setAutomaton(Scripting::CellularAutomaton *automaton)
         return;
     }
 
+    _simulationTimer->stop();
     _generationCounter = 0;
     _gridViewer->setDisplayedAutomaton(automaton);
     _stateSwitch->setAutomaton(automaton);
@@ -221,4 +275,32 @@ void MainWindow::nextGenerationHandler()
 {
     ++_generationCounter;
     statusBar()->showMessage(QString().sprintf("Generation: %u", _generationCounter));
+}
+
+
+void MainWindow::showResizeDialog()
+{
+    QInputDialog dialog;
+    dialog.setInputMode(QInputDialog::IntInput);
+    dialog.setIntMinimum(10);
+    dialog.setIntMaximum(200);
+
+    int w, h;
+    dialog.setLabelText("Width:");
+    if (dialog.exec() == QDialog::Rejected)
+        return;
+    w = dialog.intValue();
+
+    dialog.setLabelText("Height:");
+    if (dialog.exec() == QDialog::Rejected)
+        return;
+    h = dialog.intValue();
+
+    try {
+        _automaton->resizeGrid(w, h);
+    } catch (Exceptions::IndexOutOfBoundsException) {
+        QMessageBox(QMessageBox::Critical, "Invalid size", "Grid is too large. Number of cells must not be greater than " + QString::number(Scripting::CellularAutomaton::GRID_SIZE_LIMIT) + ".");
+    } catch (Exceptions::IllegalArgumentException) {
+        QMessageBox(QMessageBox::Critical, "Invalid size", "Invalid size, but why?");
+    }
 }

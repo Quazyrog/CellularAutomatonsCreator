@@ -320,13 +320,13 @@ void CellularAutomaton::compileScript(std::istream &inputStream, size_t length, 
                 line.instruction = Instruction::COMPARATOR_EQUAL;
             if (sign == "<>")
                 line.instruction = Instruction::COMPARATOR_DIFFERENT;
-            if (sign == "<")
-                line.instruction = Instruction::COMPARATOR_GREATER;
-            if (sign == "<=")
-                line.instruction = Instruction::COMPARATOR_GREATEER_EQUAL;
             if (sign == ">")
-                line.instruction = Instruction::COMPARATOR_LESS;
+                line.instruction = Instruction::COMPARATOR_GREATER;
             if (sign == ">=")
+                line.instruction = Instruction::COMPARATOR_GREATEER_EQUAL;
+            if (sign == "<")
+                line.instruction = Instruction::COMPARATOR_LESS;
+            if (sign == "<=")
                 line.instruction = Instruction::COMPARATOR_LESS_EQUAL;
 
             try {
@@ -474,8 +474,8 @@ void CellularAutomaton::nextGeneration()
         tmpHeight = _height;
     }
 
-    for (unsigned int y = 0; y < _height; ++y) {
-        for (unsigned int x = 0; x < _width; ++x) {
+    for (unsigned int x = 0; x < _width; ++x) {
+        for (unsigned int y = 0; y < _height; ++y) {
             _functionOffsetInstance->setXY(x, y);
             _functionStatInstance->setXY(x, y);
 
@@ -536,5 +536,15 @@ void CellularAutomaton::nextGeneration()
     newGrid = tmp;
 }
 
+
+void CellularAutomaton::fillGrid(quint16 state)
+{
+    if (state >= _stateRegister.size())
+        throw Exceptions::IllegalArgumentException();
+    for (unsigned int x = 0; x < _width; ++x) {
+        for (unsigned int y = 0; y < _height; ++y)
+            _grid[x][y] = state;
+    }
+}
 
 } //Namespace Scripting
