@@ -53,6 +53,7 @@ private:
 
     void createSimulationMenu();
     QMenu *_simulationMenu;
+    QAction *_simulationTogglePause;
     QAction *_simulationStopAction;
     QAction *_simulationResumeAction;
     QMenu *_simulationSpeedSubmenu;
@@ -90,6 +91,7 @@ public slots:
     void saveFileAs();
     void nextGenerationHandler();
     void showResizeDialog();
+    void togglePause();
 };
 
 #endif // MAINWINDOW_HPP

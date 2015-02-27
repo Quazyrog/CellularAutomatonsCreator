@@ -87,6 +87,11 @@ void MainWindow::createFileMenu()
 
 void MainWindow::createSimulationMenu() {
     _simulationMenu = new QMenu("Simulation", this);
+    _simulationTogglePause = new QAction(QIcon::fromTheme("media-playback-pause"), "Toggle pause", this);
+    _simulationMenu->addAction(_simulationTogglePause);
+    _simulationTogglePause->setShortcut(Qt::Key_Space);
+    connect(_simulationTogglePause, SIGNAL(triggered()), this, SLOT(togglePause()));
+
     menuBar()->addMenu(_simulationMenu);
     _simulationStopAction = new QAction(QIcon::fromTheme("media-playback-stop"), "Stop simulation", this);
     _simulationMenu->addAction(_simulationStopAction);
@@ -127,6 +132,9 @@ void MainWindow::createGridPaintingMenu()
     _fillGridWithZeros = new QAction("Fill grid with zeros", this);
     _gridPaintingMenu->addAction(_fillGridWithZeros);
     connect(_fillGridWithZeros, &QAction::triggered, [this](){
+        _simulationTimer->stop();
+        _generationCounter = 0;
+
         if (_automaton != nullptr)
                 _automaton->fillGrid();
         _gridViewer->update();
@@ -156,6 +164,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::openFile()
 {
+    _simulationTimer->stop();
+
     QFileDialog fileDialog;
     fileDialog.setWindowTitle("Open file");
     fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
@@ -266,6 +276,7 @@ void MainWindow::setAutomaton(Scripting::CellularAutomaton *automaton)
         _automaton->disconnect(_simulationTimer, SIGNAL(timeout()));
         delete _automaton;
     }
+
     _automaton = automaton;
     connect(_simulationTimer, SIGNAL(timeout()), _automaton, SLOT(nextGeneration()));
 }
@@ -280,6 +291,9 @@ void MainWindow::nextGenerationHandler()
 
 void MainWindow::showResizeDialog()
 {
+
+    _simulationTimer->stop();
+
     QInputDialog dialog;
     dialog.setInputMode(QInputDialog::IntInput);
     dialog.setIntMinimum(10);
@@ -303,4 +317,15 @@ void MainWindow::showResizeDialog()
     } catch (Exceptions::IllegalArgumentException) {
         QMessageBox(QMessageBox::Critical, "Invalid size", "Invalid size, but why?");
     }
+
+    _generationCounter = 0;
+}
+
+
+void MainWindow::togglePause()
+{
+    if (_simulationTimer->isActive())
+        _simulationTimer->stop();
+    else
+        _simulationTimer->start();
 }
