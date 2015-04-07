@@ -1,0 +1,6 @@
+<map id="GridViewer::setDisplayedAutomaton" name="GridViewer::setDisplayedAutomaton">
+<area shape="rect" id="node2" href="$class_main_window.html#afe653fbf16d39423a25955bfe8e80911" title="MainWindow::setAutomaton" alt="" coords="232,13,427,39"/>
+<area shape="rect" id="node3" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="475,13,637,39"/>
+<area shape="rect" id="node4" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="685,13,892,39"/>
+<area shape="rect" id="node5" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="940,13,1131,39"/>
+</map>

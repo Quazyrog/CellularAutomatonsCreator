@@ -1,0 +1,5 @@
+<map id="StateInfoWidget::setAutomaton" name="StateInfoWidget::setAutomaton">
+<area shape="rect" id="node2" href="$class_state_info_widget.html#a89c92ceb18e77c9620732ae8f1418885" title="StateInfoWidget::updateDisplays" alt="" coords="268,46,493,73"/>
+<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#aadcd78a46741591da1c28ffb2e107094" title="Scripting::CellularAutomaton\l::stateName" alt="" coords="541,5,739,47"/>
+<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#a37b7aadc2515030d634214f9eb5d6fd8" title="Scripting::CellularAutomaton\l::stateColor" alt="" coords="541,71,739,112"/>
+</map>

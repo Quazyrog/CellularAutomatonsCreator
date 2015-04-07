@@ -1,0 +1,6 @@
+<map id="Scripting::CellularAutomaton::saveToFile" name="Scripting::CellularAutomaton::saveToFile">
+<area shape="rect" id="node2" href="$class_main_window.html#a464aaa4d378e7b2d814756a73d6e1ed6" title="MainWindow::saveFile" alt="" coords="476,5,637,32"/>
+<area shape="rect" id="node5" href="$class_main_window.html#a1725a0bf1d276bb1fbc57ef669d73208" title="MainWindow::saveFileAs" alt="" coords="251,56,428,83"/>
+<area shape="rect" id="node3" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="685,31,892,57"/>
+<area shape="rect" id="node4" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="940,31,1131,57"/>
+</map>

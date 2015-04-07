@@ -1,0 +1,14 @@
+<map id="Scripting::CellularAutomaton::stateName" name="Scripting::CellularAutomaton::stateName">
+<area shape="rect" id="node2" href="$class_state_info_widget.html#a89c92ceb18e77c9620732ae8f1418885" title="StateInfoWidget::updateDisplays" alt="" coords="251,71,476,98"/>
+<area shape="rect" id="node13" href="$class_states_table_model.html#ada1fdc5c335100d29d0460de3a933ef2" title="StatesTableModel::data" alt="" coords="278,122,449,149"/>
+<area shape="rect" id="node3" href="$class_state_info_widget.html#a567de57eb83a27eb587ca8df054ff697" title="StateInfoWidget::StateInfo\lWidget" alt="" coords="538,5,725,47"/>
+<area shape="rect" id="node4" href="$class_state_info_widget.html#af510b43808c98107ac32feebc6a233b4" title="StateInfoWidget::setAutomaton" alt="" coords="524,71,739,98"/>
+<area shape="rect" id="node11" href="$class_state_switch_widget.html#ad779e4c3452aee23dbb78b431c543879" title="StateSwitchWidget::\lselectedBrushChange" alt="" coords="551,124,712,165"/>
+<area shape="rect" id="node5" href="$class_state_switch_widget.html#a9717ccbaa1b607c45884eddef4ee7be0" title="StateSwitchWidget::\lsetAutomaton" alt="" coords="787,61,933,103"/>
+<area shape="rect" id="node6" href="$class_state_switch_dock.html#abca67e76ac599eb62e65822028df0f79" title="StateSwitchDock::setAutomaton" alt="" coords="981,69,1201,95"/>
+<area shape="rect" id="node7" href="$class_main_window.html#afe653fbf16d39423a25955bfe8e80911" title="MainWindow::setAutomaton" alt="" coords="1249,69,1444,95"/>
+<area shape="rect" id="node8" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="1492,69,1655,95"/>
+<area shape="rect" id="node9" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="1703,69,1909,95"/>
+<area shape="rect" id="node10" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="1957,69,2148,95"/>
+<area shape="rect" id="node12" href="$class_state_switch_widget.html#ad802031958e7c1ee50ebdb917cb054d2" title="StateSwitchWidget::\lStateSwitchWidget" alt="" coords="787,127,933,168"/>
+</map>

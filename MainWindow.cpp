@@ -166,6 +166,7 @@ void MainWindow::openFile()
 {
     _simulationTimer->stop();
 
+    //FIXME dialog forgest directory
     QFileDialog fileDialog;
     fileDialog.setWindowTitle("Open file");
     fileDialog.setAcceptMode(QFileDialog::AcceptOpen);

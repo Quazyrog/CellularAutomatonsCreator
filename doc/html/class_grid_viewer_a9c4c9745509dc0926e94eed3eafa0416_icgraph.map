@@ -1,0 +1,8 @@
+<map id="GridViewer::getLeftMargin" name="GridViewer::getLeftMargin">
+<area shape="rect" id="node2" href="$class_grid_viewer.html#ab57becf1295124e374fc02a78abbbc27" title="GridViewer::paintEvent" alt="" coords="263,5,428,32"/>
+<area shape="rect" id="node3" href="$class_grid_viewer.html#accbb449438a1eb0b4e824fd2951cabcc" title="GridViewer::mouseMoveEvent" alt="" coords="240,56,451,83"/>
+<area shape="rect" id="node4" href="$class_grid_viewer.html#a8b8a79ce65f2937777668939d2d00a55" title="GridViewer::mousePressEvent" alt="" coords="240,107,451,133"/>
+<area shape="rect" id="node5" href="$class_grid_viewer.html#a1f06e47b7e63f3c7ce1bf82f989c8414" title="GridViewer::setStateBrush" alt="" coords="252,157,439,184"/>
+<area shape="rect" id="node6" href="$class_state_switch_widget.html#ad779e4c3452aee23dbb78b431c543879" title="StateSwitchWidget::\lselectedBrushChange" alt="" coords="499,150,660,191"/>
+<area shape="rect" id="node7" href="$class_state_switch_widget.html#ad802031958e7c1ee50ebdb917cb054d2" title="StateSwitchWidget::\lStateSwitchWidget" alt="" coords="708,150,855,191"/>
+</map>

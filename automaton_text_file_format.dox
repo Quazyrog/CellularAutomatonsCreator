@@ -1,0 +1,31 @@
+﻿/**
+\page TxtSave Automaton txt save format
+\brief This page describes accepted format of contents of file witch can be opened as cellular automaton.
+
+
+\section TxtGeneralDescription Introduction
+Cellular automatone used by this programs can be read and saved to plain text files.
+They are divided into three sections (described as 'Section I', 'Section II' and 'Section III').
+First of them describes set of states accepted by automaton,
+After it follows a section describing automatons rule and the last one contains informations about grid.
+The first line of file is not a part of any section.
+It contains automaton's name
+(can contain spaces).
+
+
+\section TxtStates Section I: automaton's states description
+First line of this section contains one whole number \f$ n \f$ (\f$ 1 \leq n \leq 65535 \f$ ) – the number of states in automaton.
+Then folow \f$ n \f$ lines.
+\f$ i \f$-th line contains four space-separated items:
+ - string \f$ \omega_i \f$ without spaces – name of \f$ i \f$-th state
+ - three whole numbers \f$ r_i \f$, \f$ g_i \f$, \f$ b_i \f$ (\f$ 0 \leq r_i, g_i, b_i \leq 255 \f$ ) – RGB color used to display cells in given state.
+
+
+\section TxtRule Section II: automaton's rule
+The second section of file contains description of automaton's rule. The rule is defined by script consisting of numbered lines. Each line contain one statment – condition or return.
+
+
+First line of this section contains three whole numbers \f$ k \f$, \f$ l \f$, \f$ m \f$
+(\f$ 1 \leq k \leq 1024 \f$, \f$ 0 \leq l \leq k - 1 \f$, \f$ 0 \leq m \leq n \f$):
+ - \f$ k \f$ is number of line in
+*/

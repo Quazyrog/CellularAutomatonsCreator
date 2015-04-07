@@ -1,0 +1,9 @@
+<map id="Scripting::CalculatorFunction3D::isVolatile" name="Scripting::CalculatorFunction3D::isVolatile">
+<area shape="rect" id="node2" href="$class_scripting_1_1_calculator.html#ad5e0126f3d9bcb384f550c4ad269d0b4" title="Scripting::Calculator\l::optimize" alt="" coords="260,5,407,47"/>
+<area shape="rect" id="node3" href="$class_scripting_1_1_calculator.html#a2ade0957bf266cd8bd9d15e152a676af" title="Scripting::Calculator\l::parseExpression" alt="" coords="455,5,601,47"/>
+<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#a09bc0cfddfd2fa2682e77cabcb4380b6" title="Scripting::CellularAutomaton\l::compileScript" alt="" coords="649,5,847,47"/>
+<area shape="rect" id="node5" href="$class_scripting_1_1_cellular_automaton.html#a8785bc78a92650e6ac351598569a2e73" title="Scripting::CellularAutomaton\l::readFromFile" alt="" coords="895,5,1092,47"/>
+<area shape="rect" id="node6" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="1140,13,1303,39"/>
+<area shape="rect" id="node7" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="1351,13,1557,39"/>
+<area shape="rect" id="node8" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="1605,13,1796,39"/>
+</map>

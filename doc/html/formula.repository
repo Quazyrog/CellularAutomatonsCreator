@@ -1,0 +1,8 @@
+\form#0:$n$
+\form#1:$1 \leq n \leq 65535$
+\form#2:$i$
+\form#3:$\omega_i $
+\form#4:$r_i$
+\form#5:$g_i$
+\form#6:$b_i$
+\form#7:$0 \leq r_i, g_i, b_i \leq 255$

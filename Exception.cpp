@@ -63,7 +63,7 @@ SyntaxErrorException::SyntaxErrorException(int where, QString message)
 
 const char *SyntaxErrorException::what() const noexcept
 {
-    return "MathSyntaxErrorException";
+    return "SyntaxErrorException";
 }
 
 

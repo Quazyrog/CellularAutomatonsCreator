@@ -1,0 +1,9 @@
+<map id="StateSwitchDock::setAutomaton" name="StateSwitchDock::setAutomaton">
+<area shape="rect" id="node2" href="$class_state_switch_widget.html#a9717ccbaa1b607c45884eddef4ee7be0" title="StateSwitchWidget::\lsetAutomaton" alt="" coords="273,68,420,109"/>
+<area shape="rect" id="node3" href="$class_state_info_widget.html#af510b43808c98107ac32feebc6a233b4" title="StateInfoWidget::setAutomaton" alt="" coords="475,49,689,75"/>
+<area shape="rect" id="node7" href="$class_states_table_model.html#ac4cc7b0596d23a6a1633f332c9f60ffc" title="StatesTableModel::setAutomaton" alt="" coords="468,101,696,127"/>
+<area shape="rect" id="node4" href="$class_state_info_widget.html#a89c92ceb18e77c9620732ae8f1418885" title="StateInfoWidget::updateDisplays" alt="" coords="744,46,969,73"/>
+<area shape="rect" id="node5" href="$class_scripting_1_1_cellular_automaton.html#aadcd78a46741591da1c28ffb2e107094" title="Scripting::CellularAutomaton\l::stateName" alt="" coords="1017,5,1215,47"/>
+<area shape="rect" id="node6" href="$class_scripting_1_1_cellular_automaton.html#a37b7aadc2515030d634214f9eb5d6fd8" title="Scripting::CellularAutomaton\l::stateColor" alt="" coords="1017,71,1215,112"/>
+<area shape="rect" id="node8" href="$class_scripting_1_1_cellular_automaton.html#a8d0d421e653dc2098c20b865f805eb42" title="Scripting::CellularAutomaton\l::statesNumber" alt="" coords="758,97,955,139"/>
+</map>

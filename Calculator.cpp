@@ -59,6 +59,13 @@ bool CalculatorFunction3D::isVolatile() const
 }
 
 
+Calculator::Node::Node()
+{
+    left = nullptr;
+    right = nullptr;
+}
+
+
 Calculator::Node::~Node()
 {
     if (left != nullptr)
@@ -404,8 +411,6 @@ void Calculator::optimize(Node *root)
 {
     if (root->type == Calculator::NodeType::FUNCTION_2D) {
         Function2DNode *convertedRoot = dynamic_cast<Function2DNode*>(root);
-        if (convertedRoot == nullptr)
-                throw Exceptions::RuntimeException();
 
         optimize(convertedRoot->arg);
         if (convertedRoot->arg->type == Calculator::NodeType::VALUE
@@ -418,8 +423,6 @@ void Calculator::optimize(Node *root)
 
     if (root->type == Calculator::NodeType::FUNCTION_3D) {
         Function3DNode *convertedRoot = dynamic_cast<Function3DNode*>(root);
-        if (convertedRoot == nullptr)
-                throw Exceptions::RuntimeException();
 
         optimize(convertedRoot->arg1);
         optimize(convertedRoot->arg2);

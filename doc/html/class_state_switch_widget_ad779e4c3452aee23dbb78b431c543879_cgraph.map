@@ -1,0 +1,12 @@
+<map id="StateSwitchWidget::selectedBrushChange" name="StateSwitchWidget::selectedBrushChange">
+<area shape="rect" id="node2" href="$class_grid_viewer.html#a1f06e47b7e63f3c7ce1bf82f989c8414" title="GridViewer::setStateBrush" alt="" coords="234,122,421,149"/>
+<area shape="rect" id="node9" href="$class_state_info_widget.html#a89c92ceb18e77c9620732ae8f1418885" title="StateInfoWidget::updateDisplays" alt="" coords="215,231,440,258"/>
+<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#a8d0d421e653dc2098c20b865f805eb42" title="Scripting::CellularAutomaton\l::statesNumber" alt="" coords="488,5,685,47"/>
+<area shape="rect" id="node4" href="$class_grid_viewer.html#a5cd85715cc3946cfec8494db64aa0917" title="GridViewer::getCellSize" alt="" coords="733,122,903,149"/>
+<area shape="rect" id="node7" href="$class_grid_viewer.html#a9c4c9745509dc0926e94eed3eafa0416" title="GridViewer::getLeftMargin" alt="" coords="493,71,680,98"/>
+<area shape="rect" id="node8" href="$class_grid_viewer.html#a57e061415c99fbae1cbde99d89029f82" title="GridViewer::getTopMargin" alt="" coords="493,173,680,199"/>
+<area shape="rect" id="node5" href="$class_scripting_1_1_cellular_automaton.html#a414e5a0c38974b4c2da3442a7209990a" title="Scripting::CellularAutomaton\l::gridWidth" alt="" coords="951,73,1148,115"/>
+<area shape="rect" id="node6" href="$class_scripting_1_1_cellular_automaton.html#a5dd6488d176a7ca73f7f83da7c6d7429" title="Scripting::CellularAutomaton\l::gridHeight" alt="" coords="951,148,1148,189"/>
+<area shape="rect" id="node10" href="$class_scripting_1_1_cellular_automaton.html#aadcd78a46741591da1c28ffb2e107094" title="Scripting::CellularAutomaton\l::stateName" alt="" coords="488,224,685,265"/>
+<area shape="rect" id="node11" href="$class_scripting_1_1_cellular_automaton.html#a37b7aadc2515030d634214f9eb5d6fd8" title="Scripting::CellularAutomaton\l::stateColor" alt="" coords="488,289,685,331"/>
+</map>

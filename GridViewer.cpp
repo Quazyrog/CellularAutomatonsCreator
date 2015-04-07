@@ -60,6 +60,7 @@ void GridViewer::paintEvent(QPaintEvent *event)
         }
     }
 
+    //FIXME: segfault after changing automaton
     QPen activeCellPen(Qt::black, 3);
     QColor activeCellColor = QColor(_automaton->stateColor(_stateBrush));
     _painter->setPen(activeCellPen);

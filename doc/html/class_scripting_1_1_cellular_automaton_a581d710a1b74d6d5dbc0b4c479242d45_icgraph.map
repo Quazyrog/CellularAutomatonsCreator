@@ -1,0 +1,10 @@
+<map id="Scripting::CellularAutomaton::registerChanged" name="Scripting::CellularAutomaton::registerChanged">
+<area shape="rect" id="node2" href="$class_scripting_1_1_cellular_automaton.html#af2c67f4198b70ea334a9ef5b695be9bc" title="Scripting::CellularAutomaton\l::newState" alt="" coords="251,37,448,79"/>
+<area shape="rect" id="node8" href="$class_scripting_1_1_cellular_automaton.html#a35373f94d25e1ea5bb7eaca3504b17c9" title="Scripting::CellularAutomaton\l::setStateColor" alt="" coords="251,103,448,144"/>
+<area shape="rect" id="node9" href="$class_scripting_1_1_cellular_automaton.html#a6253c4917504197b2e7e2b964a471c97" title="Scripting::CellularAutomaton\l::setStateName" alt="" coords="251,168,448,209"/>
+<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#ae6fa21df74d01cba0959ba04a736b298" title="Scripting::CellularAutomaton\l::CellularAutomaton" alt="" coords="496,5,693,47"/>
+<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#a8785bc78a92650e6ac351598569a2e73" title="Scripting::CellularAutomaton\l::readFromFile" alt="" coords="496,71,693,112"/>
+<area shape="rect" id="node5" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="741,78,904,105"/>
+<area shape="rect" id="node6" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="952,78,1159,105"/>
+<area shape="rect" id="node7" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="1207,78,1397,105"/>
+</map>

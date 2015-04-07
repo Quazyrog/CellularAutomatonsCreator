@@ -1,0 +1,6 @@
+<map id="MainWindow::createGridPaintingMenu" name="MainWindow::createGridPaintingMenu">
+<area shape="rect" id="node2" href="$class_scripting_1_1_cellular_automaton.html#acaaee2247cf433faed2fc4bac6814d24" title="fillGrid " alt="" coords="330,5,527,47"/>
+<area shape="rect" id="node3" href="$class_main_window.html#a191a1686e2d69978b192ceeb62c99fe4" title="MainWindow::showResizeDialog" alt="" coords="316,71,541,98"/>
+<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#adb3ef53924b2a2e5999b9318a581b29b" title="Scripting::CellularAutomaton\l::resizeGrid" alt="" coords="589,64,787,105"/>
+<area shape="rect" id="node5" href="$class_scripting_1_1_cellular_automaton.html#a09ded0b0daad4152c89215246bed7e50" title="Scripting::CellularAutomaton\l::deleteGrid" alt="" coords="835,64,1032,105"/>
+</map>

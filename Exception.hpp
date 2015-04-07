@@ -1,5 +1,5 @@
 ﻿/** @file
- *  @brief Header for exceptions classes.
+ *  Header for exceptions classes.
  */
 /* Copyright 2014 Wojciech Matusiak
  *
@@ -28,7 +28,7 @@
 namespace Exceptions {
 
 /**
- * @brief The IllegalArgumentException class is thrown when value of argument passed to a function is invalid.
+ * The IllegalArgumentException class is thrown when value of argument passed to a function is invalid.
  *
  * If the argument is array's index, you should throw <code>IndexOutOfBoundsException</code>. If the argument is pointer and it's value is null, you should throw <code>NullPointerException</code>.
  */
@@ -40,7 +40,7 @@ public:
 
 
 /**
- * @brief The IndexOutOfBoundsException class is thrown when trying to acces array's index witch is out of bound.
+ * The IndexOutOfBoundsException class is thrown when trying to acces array's index witch is out of bound.
  */
 class IndexOutOfBoundsException : public std::exception
 {
@@ -50,7 +50,7 @@ public:
 
 
 /**
- * @brief The NullPointerException class is thrown when pointer witch shouldn't be null, is null.
+ * The NullPointerException class is thrown when pointer witch shouldn't be null, is null.
  */
 class NullPointerException : public std::exception
 {
@@ -59,7 +59,7 @@ public:
 };
 
 /**
- * @brief The IOException class is thrown after occurrence of error when reading ro writting to file.
+ * The IOException class is thrown after occurrence of error when reading ro writting to file.
  */
 class IOException : public std::exception
 {
@@ -69,7 +69,7 @@ public:
 
 
 /**
- * @brief The RuntimeException may be thrown, when thing that shouldn't happen happens...
+ * The RuntimeException may be thrown, when thing that shouldn't happen happens...
  */
 class RuntimeException : public std::exception
 {
@@ -79,7 +79,7 @@ public:
 
 
 /**
- * @brief The StateLimitReachedException class is thrown when requesting to add new state to cellukar automaton's register, and the state limit was already reached.
+ * The StateLimitReachedException class is thrown when requesting to add new state to cellukar automaton's register, and the state limit was already reached.
  * @see CellularAutomaton::STATES_LIMIT
  */
 class StateLimitReachedException : public std::exception

@@ -1,0 +1,5 @@
+<map id="Scripting::CellularAutomaton::CellularAutomaton" name="Scripting::CellularAutomaton::CellularAutomaton">
+<area shape="rect" id="node2" href="$class_scripting_1_1_cellular_automaton.html#a8d0d421e653dc2098c20b865f805eb42" title="Scripting::CellularAutomaton\l::statesNumber" alt="" coords="251,5,448,47"/>
+<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#af2c67f4198b70ea334a9ef5b695be9bc" title="Scripting::CellularAutomaton\l::newState" alt="" coords="251,71,448,112"/>
+<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#af54c30b8d309845909f22df330fe1e5c" title="Scripting::CellularAutomaton\l::name" alt="" coords="496,71,693,112"/>
+</map>
