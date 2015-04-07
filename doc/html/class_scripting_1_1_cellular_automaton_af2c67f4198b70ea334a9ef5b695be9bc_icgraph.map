@@ -1,7 +1,0 @@
-<map id="Scripting::CellularAutomaton::newState" name="Scripting::CellularAutomaton::newState">
-<area shape="rect" id="node2" href="$class_scripting_1_1_cellular_automaton.html#ae6fa21df74d01cba0959ba04a736b298" title="Scripting::CellularAutomaton\l::CellularAutomaton" alt="" coords="251,5,448,47"/>
-<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#a8785bc78a92650e6ac351598569a2e73" title="Scripting::CellularAutomaton\l::readFromFile" alt="" coords="251,71,448,112"/>
-<area shape="rect" id="node4" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="496,78,659,105"/>
-<area shape="rect" id="node5" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="707,78,913,105"/>
-<area shape="rect" id="node6" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="961,78,1152,105"/>
-</map>

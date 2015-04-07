@@ -1,8 +1,0 @@
-<map id="StatesTableModel::setAutomaton" name="StatesTableModel::setAutomaton">
-<area shape="rect" id="node2" href="$class_state_switch_widget.html#a9717ccbaa1b607c45884eddef4ee7be0" title="StateSwitchWidget::\lsetAutomaton" alt="" coords="281,5,428,47"/>
-<area shape="rect" id="node3" href="$class_state_switch_dock.html#abca67e76ac599eb62e65822028df0f79" title="StateSwitchDock::setAutomaton" alt="" coords="476,13,696,39"/>
-<area shape="rect" id="node4" href="$class_main_window.html#afe653fbf16d39423a25955bfe8e80911" title="MainWindow::setAutomaton" alt="" coords="744,13,939,39"/>
-<area shape="rect" id="node5" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="987,13,1149,39"/>
-<area shape="rect" id="node6" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="1197,13,1404,39"/>
-<area shape="rect" id="node7" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="1452,13,1643,39"/>
-</map>

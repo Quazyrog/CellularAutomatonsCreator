@@ -1,7 +1,0 @@
-<map id="Exceptions::IOException::what" name="Exceptions::IOException::what">
-<area shape="rect" id="node2" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="453,5,616,32"/>
-<area shape="rect" id="node5" href="$class_main_window.html#a464aaa4d378e7b2d814756a73d6e1ed6" title="MainWindow::saveFile" alt="" coords="454,56,615,83"/>
-<area shape="rect" id="node6" href="$class_main_window.html#a1725a0bf1d276bb1fbc57ef669d73208" title="MainWindow::saveFileAs" alt="" coords="228,107,405,133"/>
-<area shape="rect" id="node3" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="664,56,871,83"/>
-<area shape="rect" id="node4" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="919,56,1109,83"/>
-</map>

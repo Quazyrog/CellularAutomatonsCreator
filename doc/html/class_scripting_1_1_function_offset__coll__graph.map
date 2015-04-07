@@ -1,9 +1,0 @@
-<map id="Scripting::FunctionOffset" name="Scripting::FunctionOffset">
-<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html" title="Scripting::CellularAutomaton" alt="" coords="247,317,445,344"/>
-<area shape="rect" id="node2" href="$class_scripting_1_1_calculator_function3_d.html" title="Scripting::CalculatorFunction3D" alt="" coords="445,109,663,136"/>
-<area shape="rect" id="node5" href="$class_scripting_1_1_function_stat.html" title="Scripting::FunctionStat" alt="" coords="156,407,317,433"/>
-<area shape="rect" id="node6" href="$class_scripting_1_1_calculator_function2_d.html" title="Scripting::CalculatorFunction2D" alt="" coords="5,317,223,344"/>
-<area shape="rect" id="node7" href="$struct_scripting_1_1_cellular_automaton_1_1_script_line.html" title="Scripting::CellularAutomaton\l::ScriptLine" alt="" coords="225,213,422,255"/>
-<area shape="rect" id="node8" href="$class_scripting_1_1_calculator.html" title="Scripting::Calculator" alt="" coords="250,109,397,136"/>
-<area shape="rect" id="node9" href="$struct_scripting_1_1_calculator_1_1_node.html" title="Scripting::Calculator\l::Node" alt="" coords="250,5,397,47"/>
-</map>

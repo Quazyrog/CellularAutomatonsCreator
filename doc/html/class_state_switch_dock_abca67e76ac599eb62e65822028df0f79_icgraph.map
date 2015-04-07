@@ -1,6 +1,0 @@
-<map id="StateSwitchDock::setAutomaton" name="StateSwitchDock::setAutomaton">
-<area shape="rect" id="node2" href="$class_main_window.html#afe653fbf16d39423a25955bfe8e80911" title="MainWindow::setAutomaton" alt="" coords="273,5,468,32"/>
-<area shape="rect" id="node3" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="516,5,679,32"/>
-<area shape="rect" id="node4" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="727,5,933,32"/>
-<area shape="rect" id="node5" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="981,5,1172,32"/>
-</map>

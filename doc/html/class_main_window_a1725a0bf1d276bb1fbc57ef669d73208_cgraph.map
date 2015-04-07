@@ -1,5 +1,0 @@
-<map id="MainWindow::saveFileAs" name="MainWindow::saveFileAs">
-<area shape="rect" id="node2" href="$class_scripting_1_1_cellular_automaton.html#af617610a0610fca34784ebb64401691b" title="Scripting::CellularAutomaton\l::saveToFile" alt="" coords="231,5,428,47"/>
-<area shape="rect" id="node4" href="$class_exceptions_1_1_i_o_exception.html#a7ae9c44e518023762f0ee57b68925a65" title="Exceptions::IOException\l::what" alt="" coords="242,71,417,112"/>
-<area shape="rect" id="node3" href="$class_scripting_1_1_calculator.html#ac1a8cc23fb93e7145a6109803c437865" title="Scripting::Calculator\l::toString" alt="" coords="476,5,623,47"/>
-</map>

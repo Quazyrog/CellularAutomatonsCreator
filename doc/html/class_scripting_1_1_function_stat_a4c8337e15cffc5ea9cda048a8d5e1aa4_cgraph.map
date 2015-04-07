@@ -1,6 +1,0 @@
-<map id="Scripting::FunctionStat::updateCache" name="Scripting::FunctionStat::updateCache">
-<area shape="rect" id="node2" href="$class_scripting_1_1_cellular_automaton.html#a8d0d421e653dc2098c20b865f805eb42" title="Scripting::CellularAutomaton\l::statesNumber" alt="" coords="215,5,412,47"/>
-<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#a414e5a0c38974b4c2da3442a7209990a" title="Scripting::CellularAutomaton\l::gridWidth" alt="" coords="215,71,412,112"/>
-<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#a5dd6488d176a7ca73f7f83da7c6d7429" title="Scripting::CellularAutomaton\l::gridHeight" alt="" coords="215,136,412,177"/>
-<area shape="rect" id="node5" href="$class_scripting_1_1_cellular_automaton.html#a0ba7d7849f59d22550e679926b2fa790" title="Scripting::CellularAutomaton\l::cellState" alt="" coords="215,201,412,243"/>
-</map>

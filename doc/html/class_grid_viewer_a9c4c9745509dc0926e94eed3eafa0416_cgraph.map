@@ -1,5 +1,0 @@
-<map id="GridViewer::getLeftMargin" name="GridViewer::getLeftMargin">
-<area shape="rect" id="node2" href="$class_grid_viewer.html#a5cd85715cc3946cfec8494db64aa0917" title="GridViewer::getCellSize" alt="" coords="240,63,409,90"/>
-<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#a414e5a0c38974b4c2da3442a7209990a" title="Scripting::CellularAutomaton\l::gridWidth" alt="" coords="457,5,655,47"/>
-<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#a5dd6488d176a7ca73f7f83da7c6d7429" title="Scripting::CellularAutomaton\l::gridHeight" alt="" coords="457,71,655,112"/>
-</map>

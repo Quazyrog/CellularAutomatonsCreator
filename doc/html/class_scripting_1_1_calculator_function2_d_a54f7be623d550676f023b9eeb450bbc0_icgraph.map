@@ -1,8 +1,0 @@
-<map id="Scripting::CalculatorFunction2D::name" name="Scripting::CalculatorFunction2D::name">
-<area shape="rect" id="node2" href="$class_scripting_1_1_calculator.html#a757d15eed047c0979ce676b584bfbffa" title="Scripting::Calculator\l::installFunction2D" alt="" coords="260,5,407,47"/>
-<area shape="rect" id="node3" href="$class_scripting_1_1_cellular_automaton.html#a09bc0cfddfd2fa2682e77cabcb4380b6" title="Scripting::CellularAutomaton\l::compileScript" alt="" coords="455,5,652,47"/>
-<area shape="rect" id="node4" href="$class_scripting_1_1_cellular_automaton.html#a8785bc78a92650e6ac351598569a2e73" title="Scripting::CellularAutomaton\l::readFromFile" alt="" coords="700,5,897,47"/>
-<area shape="rect" id="node5" href="$class_main_window.html#a288b768c3c21a9171bdc56fe845ece8b" title="MainWindow::openFile" alt="" coords="945,13,1108,39"/>
-<area shape="rect" id="node6" href="$class_main_window.html#aaf455232cccaa422fc4c371fa99bff84" title="MainWindow::createFileMenu" alt="" coords="1156,13,1363,39"/>
-<area shape="rect" id="node7" href="$class_main_window.html#a8b244be8b7b7db1b08de2a2acb9409db" title="MainWindow::MainWindow" alt="" coords="1411,13,1601,39"/>
-</map>

@@ -1,9 +1,0 @@
-<map id="Scripting::Calculator::parseExpression" name="Scripting::Calculator::parseExpression">
-<area shape="rect" id="node2" href="$class_scripting_1_1_calculator.html#ab554f80f181a122b24c34589e2290c79" title="Scripting::Calculator\l::parse" alt="" coords="200,71,347,112"/>
-<area shape="rect" id="node3" href="$class_scripting_1_1_calculator.html#ad5e0126f3d9bcb384f550c4ad269d0b4" title="Scripting::Calculator\l::optimize" alt="" coords="200,136,347,177"/>
-<area shape="rect" id="node4" href="$class_scripting_1_1_calculator_function2_d.html#a10e79b1887582a43fb59bdf7a966404d" title="Scripting::CalculatorFunction2\lD::isVolatile" alt="" coords="395,5,601,47"/>
-<area shape="rect" id="node5" href="$class_scripting_1_1_calculator_function2_d.html#a32539f2749e119918a7a5a5aa0d59167" title="Scripting::CalculatorFunction2\lD::valueOf" alt="" coords="395,71,601,112"/>
-<area shape="rect" id="node6" href="$class_scripting_1_1_calculator_function3_d.html#a81a81c261dbc4642b72b4e28d47dbd92" title="Scripting::CalculatorFunction3\lD::isVolatile" alt="" coords="395,136,601,177"/>
-<area shape="rect" id="node7" href="$class_scripting_1_1_calculator_function3_d.html#a6294c3bd6f33a7f4129334dc2ec45a16" title="Scripting::CalculatorFunction3\lD::valueOf" alt="" coords="395,201,601,243"/>
-<area shape="rect" id="node8" href="$class_scripting_1_1_calculator.html#a4689e716fb9dc36fe1ae96503ea14978" title="Scripting::Calculator\l::countNode" alt="" coords="425,267,571,308"/>
-</map>

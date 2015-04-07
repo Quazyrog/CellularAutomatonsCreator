@@ -4,10 +4,10 @@
 
 
 \section TxtGeneralDescription Introduction
-Cellular automatone used by this programs can be read and saved to plain text files.
+Cellular automaton used by this programs can be read and saved to plain text files.
 They are divided into three sections (described as 'Section I', 'Section II' and 'Section III').
 First of them describes set of states accepted by automaton,
-After it follows a section describing automatons rule and the last one contains informations about grid.
+After it follows a section describing automatons rule and the last one contains information about grid.
 The first line of file is not a part of any section.
 It contains automaton's name
 (can contain spaces).
@@ -15,17 +15,31 @@ It contains automaton's name
 
 \section TxtStates Section I: automaton's states description
 First line of this section contains one whole number \f$ n \f$ (\f$ 1 \leq n \leq 65535 \f$ ) – the number of states in automaton.
-Then folow \f$ n \f$ lines.
+Then follow \f$ n \f$ lines.
 \f$ i \f$-th line contains four space-separated items:
  - string \f$ \omega_i \f$ without spaces – name of \f$ i \f$-th state
  - three whole numbers \f$ r_i \f$, \f$ g_i \f$, \f$ b_i \f$ (\f$ 0 \leq r_i, g_i, b_i \leq 255 \f$ ) – RGB color used to display cells in given state.
 
 
 \section TxtRule Section II: automaton's rule
-The second section of file contains description of automaton's rule. The rule is defined by script consisting of numbered lines. Each line contain one statment – condition or return.
-
+The second section of file contains description of automaton's rule. The rule is defined by script consisting of numbered lines. Each line contain one statement – condition or return.
 
 First line of this section contains three whole numbers \f$ k \f$, \f$ l \f$, \f$ m \f$
 (\f$ 1 \leq k \leq 1024 \f$, \f$ 0 \leq l \leq k - 1 \f$, \f$ 0 \leq m \leq n \f$):
- - \f$ k \f$ is number of line in
+ - \f$ k \f$ is number of line in this section
+ - \f$ l \f$ is number of first line (execution of script will start from this line)
+ - \f$ m \f$ default state (unused)
+
+Then follow \f$ k \f$ lines. At beginning of each line there is integer number \f$ i \f$ (\f$ 0 \leq i \leq k - 1 \f$) -- number of the line. Each line must have unique
+number. Then in the same line there is one of followings:
+ - <code>IF $EXPR1 $COMP $EXPR2 THEN $L1 ELSE $L2</code> where <code>$EXPR1</code> and <code>$EXPR2</code> are formulas parsed by <code>Calculator</code>; <code>$COMP</code> is
+   comparison sign (one of comparators in <code>Scripting::CellularAutomaton::Instruction</code>; <code>$L1</code> and <code>$L2</code> are numbers of lines in script.
+   If condition <code>$EXPR1 $COMP $EXPR2</code> is true, then next executed line will be <code>$L1</code>, in other case it will be <code>$L2</code>.
+ - <code>STATE $S</code> -- this cell in next generation will have state of number <code>$S</code>
+
+
+\section TxtWorld Section III: automaton's grid
+This section describes grid's size, and state of every cell on this grid. First line contains two positive whole numbers \f$ w \f$ and \f$ h \f$ (\f$ w \times h \leq 60000 \f$).
+\f$ w \f$ is grid's width and \f$ h \f$ is its height. Then there are \f$ w \times h \f$ numbers -- in \f$ h \f$ lines, \f$ w \f$ numbers in each. \f$ c \f$-th number in
+\f$ r \f$-th line is state of cell on grid witch coordinates are \f$ (x,y)=(c,r) \f$.
 */
