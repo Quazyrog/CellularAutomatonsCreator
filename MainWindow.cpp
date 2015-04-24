@@ -21,7 +21,8 @@
 #include "StateSwitchWindow.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent)
+    QMainWindow(parent),
+    _fileDialog(this)
 {
     _automaton = nullptr;
 
@@ -167,15 +168,14 @@ void MainWindow::openFile()
     _simulationTimer->stop();
 
     //FIXME dialog forgest directory
-    QFileDialog fileDialog;
-    fileDialog.setWindowTitle("Open file");
-    fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-    fileDialog.setFileMode(QFileDialog::ExistingFile);
+    _fileDialog.setWindowTitle("Open file");
+    _fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+    _fileDialog.setFileMode(QFileDialog::ExistingFile);
 
     QString selectedFile;
-    if (!fileDialog.exec())
+    if (!_fileDialog.exec())
         return;
-    selectedFile = fileDialog.selectedFiles()[0];
+    selectedFile = _fileDialog.selectedFiles()[0];
 
     try {
         setAutomaton(Scripting::CellularAutomaton::readFromFile(selectedFile));
@@ -230,17 +230,16 @@ void MainWindow::saveFile()
 
 void MainWindow::saveFileAs()
 {
-    QFileDialog fileDialog;
-    fileDialog.setWindowTitle("Save file");
-    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog.setFileMode(QFileDialog::AnyFile);
+    _fileDialog.setWindowTitle("Save file");
+    _fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    _fileDialog.setFileMode(QFileDialog::AnyFile);
     if (_documentPath != QString(""))
-        fileDialog.setDirectory(QFileInfo(_documentPath).dir());
+        _fileDialog.setDirectory(QFileInfo(_documentPath).dir());
 
     QString selectedFile;
-    if (!fileDialog.exec())
+    if (!_fileDialog.exec())
         return;
-    selectedFile = fileDialog.selectedFiles()[0];
+    selectedFile = _fileDialog.selectedFiles()[0];
 
     try {
         _automaton->saveToFile(selectedFile);

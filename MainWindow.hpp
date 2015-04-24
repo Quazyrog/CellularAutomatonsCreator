@@ -50,6 +50,7 @@ private:
     QString _documentPath;
     QAction *_fileSaveAsAction;
     QAction *_fileCloseAction;
+    QFileDialog _fileDialog;
 
     void createSimulationMenu();
     QMenu *_simulationMenu;

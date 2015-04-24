@@ -41,6 +41,8 @@ void GridViewer::paintEvent(QPaintEvent *event)
 {
     if (_automaton == nullptr)
         return;
+    if (_automaton->statesNumber() == 0)
+        return;
 
     const int cellSize = getCellSize();
     const int topMargin = getTopMargin();
@@ -75,6 +77,7 @@ void GridViewer::setDisplayedAutomaton(Scripting::CellularAutomaton *automaton)
 {
     qDebug() << "Changing displayed automaton to" << static_cast<void*>(automaton);
     _automaton = automaton;
+    _stateBrush = 0;
     repaint();
 }
 
